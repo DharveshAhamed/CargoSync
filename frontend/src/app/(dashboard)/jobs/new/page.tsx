@@ -1,22 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
-import type { Truck } from '@/types';
 
 export default function NewJobPage() {
   const router = useRouter();
-  const [trucks, setTrucks] = useState<Truck[]>([]);
-  const [form, setForm] = useState({ job_name: '', date: '', truck_id: '', time_window: '' });
+  const [form, setForm] = useState({ job_name: '', date: '', time_window: '', description: '', pickup_location: '', delivery_location: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    api.get('/trucks/').then(({ data }) => setTrucks(data.filter((t: Truck) => t.is_active))).catch((err: any) => {
-      setError(err.response?.data?.detail || 'Failed to load trucks');
-    });
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +17,6 @@ export default function NewJobPage() {
     try {
       const { data } = await api.post('/jobs/', {
         ...form,
-        truck_id: form.truck_id || undefined,
         time_window: form.time_window || undefined,
       });
       router.push(`/jobs/${data.id}`);
@@ -56,6 +47,14 @@ export default function NewJobPage() {
             <input value={form.job_name} onChange={e => setForm({...form, job_name: e.target.value})} required
               className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style={inputStyle} placeholder="e.g. Mumbai to Delhi Shipment" />
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-1.5">Job Description</label>
+            <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} required rows={4} className="w-full px-4 py-2.5 rounded-xl text-sm" style={inputStyle} placeholder="Cargo type, handling needs, approximate weight and other instructions" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <label className="text-sm font-medium">Pickup location<input required value={form.pickup_location} onChange={e=>setForm({...form,pickup_location:e.target.value})} className="mt-1.5 w-full px-4 py-2.5 rounded-xl text-sm" style={inputStyle}/></label>
+            <label className="text-sm font-medium">Delivery location<input required value={form.delivery_location} onChange={e=>setForm({...form,delivery_location:e.target.value})} className="mt-1.5 w-full px-4 py-2.5 rounded-xl text-sm" style={inputStyle}/></label>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text)' }}>Date</label>
@@ -67,14 +66,6 @@ export default function NewJobPage() {
               <input value={form.time_window} onChange={e => setForm({...form, time_window: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style={inputStyle} placeholder="e.g. 09:00-17:00" />
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text)' }}>Assign Truck (optional)</label>
-            <select value={form.truck_id} onChange={e => setForm({...form, truck_id: e.target.value})}
-              className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none" style={inputStyle}>
-              <option value="">Select a truck...</option>
-              {trucks.map(t => <option key={t.id} value={t.id}>{t.truck_name} ({t.plate_number})</option>)}
-            </select>
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={loading}

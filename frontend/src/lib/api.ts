@@ -8,6 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1
 
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,6 +36,9 @@ api.interceptors.response.use(
         localStorage.removeItem('user');
         window.location.href = '/login';
       }
+    }
+    if (!error.response && typeof window !== 'undefined') {
+      error.message = 'Cannot reach the CargoSync API. Confirm the backend is running on http://127.0.0.1:8000.';
     }
     return Promise.reject(error);
   }

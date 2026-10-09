@@ -31,10 +31,11 @@ export function isAuthenticated(): boolean {
 }
 
 export function logout() {
+  const user = getUser();
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
-  window.location.href = '/login';
+  window.location.href = user?.user_type === 'admin' ? '/admin/login' : user?.user_type === 'trucker' ? '/trucker/login' : '/company/login';
 }
 
 export function isAdmin(): boolean {

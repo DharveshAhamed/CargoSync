@@ -15,6 +15,7 @@ from app.models.admin import Admin
 from app.models.team_invite import TeamInvite
 from app.schemas.auth import (
     CompanyRegisterRequest,
+    TruckerRegisterRequest,
     AdminRegisterRequest,
     LoginRequest,
     TokenResponse,
@@ -27,98 +28,103 @@ from app.schemas.auth import (
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=TokenResponse)
-def register_company(data: CompanyRegisterRequest, db: Session = Depends(get_db)):
-    """Register a new company and create the first admin user."""
-    # Check if email already exists
+def _register_account(data: CompanyRegisterRequest, account_type: str, db: Session):
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered",
-        )
-
-    # Create company
+        raise HTTPException(status_code=400, detail="Email already registered")
     company = Company(
-        name=data.company_name,
-        email=data.email,
-        phone=data.phone,
-        address=data.address,
+        name=data.company_name, email=data.email, phone=data.phone,
+        address=data.address, account_type=account_type,
     )
     db.add(company)
     db.flush()
-
-    # Create the first user as company manager
     user = User(
-        company_id=company.id,
-        name=data.name,
-        email=data.email,
-        password_hash=hash_password(data.password),
-        phone=data.phone,
-        role="manager",
+        company_id=company.id, name=data.name, email=data.email,
+        password_hash=hash_password(data.password), phone=data.phone,
+        role="manager" if account_type == "company" else "trucker_owner",
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # Generate tokens
-    token_data = {
-        "sub": user.id,
-        "role": user.role,
-        "user_type": "user",
-        "company_id": company.id,
-    }
-    access_token = create_access_token(token_data)
-    refresh_token = create_refresh_token(token_data)
-
+    token_data = {"sub": user.id, "role": user.role, "user_type": account_type, "company_id": company.id}
     return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        user={
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "role": user.role,
-            "company_id": company.id,
-            "company_name": company.name,
-            "user_type": "user",
-        },
+        access_token=create_access_token(token_data),
+        refresh_token=create_refresh_token(token_data),
+        user={"id": user.id, "name": user.name, "email": user.email, "role": user.role,
+              "company_id": company.id, "company_name": company.name, "user_type": account_type},
     )
+
+
+def _login_account(data: LoginRequest, account_type: str, db: Session):
+    user = db.query(User).filter(User.email == data.email).first()
+    company = db.query(Company).filter(Company.id == user.company_id).first() if user else None
+    if (not user or not company or company.account_type != account_type or
+            not verify_password(data.password, user.password_hash)):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    token_data = {"sub": user.id, "role": user.role, "user_type": account_type, "company_id": user.company_id}
+    return TokenResponse(
+        access_token=create_access_token(token_data), refresh_token=create_refresh_token(token_data),
+        user={"id": user.id, "name": user.name, "email": user.email, "role": user.role,
+              "company_id": user.company_id, "company_name": company.name, "user_type": account_type},
+    )
+
+
+@router.post("/register", response_model=TokenResponse)
+def register_company(data: CompanyRegisterRequest, db: Session = Depends(get_db)):
+    """Register a new company and create the first admin user."""
+    return _register_account(data, "company", db)
+
+
+@router.post("/company/register", response_model=TokenResponse)
+def register_company_explicit(data: CompanyRegisterRequest, db: Session = Depends(get_db)):
+    return _register_account(data, "company", db)
+
+
+@router.post("/trucker/register", response_model=TokenResponse)
+def register_trucker(data: TruckerRegisterRequest, db: Session = Depends(get_db)):
+    return _register_account(data, "trucker", db)
 
 
 @router.post("/login", response_model=TokenResponse)
 def login_user(data: LoginRequest, db: Session = Depends(get_db)):
     """Login for company users."""
-    user = db.query(User).filter(User.email == data.email).first()
-    if not user or not verify_password(data.password, user.password_hash):
+    return _login_account(data, "company", db)
+
+
+@router.post("/company/login", response_model=TokenResponse)
+def login_company(data: LoginRequest, db: Session = Depends(get_db)):
+    return _login_account(data, "company", db)
+
+
+@router.post("/trucker/login", response_model=TokenResponse)
+def login_trucker(data: LoginRequest, db: Session = Depends(get_db)):
+    return _login_account(data, "trucker", db)
+
+
+@router.post("/admin/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+def register_first_admin(data: AdminRegisterRequest, db: Session = Depends(get_db)):
+    """Create the first platform administrator; disabled after initial setup."""
+    if db.query(Admin).count() > 0:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Administrator setup is complete. Sign in with the existing admin account.",
         )
-
-    company = db.query(Company).filter(Company.id == user.company_id).first()
-
-    token_data = {
-        "sub": user.id,
-        "role": user.role,
-        "user_type": "user",
-        "company_id": user.company_id,
-    }
-    access_token = create_access_token(token_data)
-    refresh_token = create_refresh_token(token_data)
-
+    admin = Admin(
+        name=data.name,
+        email=data.email,
+        password_hash=hash_password(data.password),
+        role="super_admin",
+    )
+    db.add(admin)
+    db.commit()
+    db.refresh(admin)
+    token_data = {"sub": admin.id, "role": admin.role, "user_type": "admin"}
     return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        user={
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "role": user.role,
-            "company_id": user.company_id,
-            "company_name": company.name if company else None,
-            "user_type": "user",
-        },
+        access_token=create_access_token(token_data),
+        refresh_token=create_refresh_token(token_data),
+        user={"id": admin.id, "name": admin.name, "email": admin.email,
+              "role": admin.role, "user_type": "admin"},
     )
 
 
@@ -184,7 +190,7 @@ def get_profile(
             role=user.role,
             company_id=user.company_id,
             company_name=company.name if company else None,
-            user_type="user",
+            user_type=company.account_type if company else "company",
         )
 
 
@@ -302,10 +308,13 @@ def accept_invite(token: str, data: CompanyRegisterRequest, db: Session = Depend
     db.commit()
     db.refresh(user)
 
+    company = db.query(Company).filter(Company.id == invite.company_id).first()
+    account_type = company.account_type if company else "company"
+
     token_data = {
         "sub": user.id,
         "role": user.role,
-        "user_type": "user",
+        "user_type": account_type,
         "company_id": invite.company_id,
     }
     access_token = create_access_token(token_data)
@@ -320,6 +329,6 @@ def accept_invite(token: str, data: CompanyRegisterRequest, db: Session = Depend
             "email": user.email,
             "role": user.role,
             "company_id": invite.company_id,
-            "user_type": "user",
+            "user_type": account_type,
         },
     )

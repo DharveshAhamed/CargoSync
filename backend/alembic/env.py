@@ -11,7 +11,7 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 # Import our application's Base and all models so metadata is populated
-from app.core.deps import Base
+from app.core.deps import Base, engine
 from app.core.config import get_settings
 
 # Import all models to register them with Base.metadata
@@ -26,6 +26,7 @@ from app.models.delivery import Delivery
 from app.models.claim import Claim
 from app.models.audit_log import AuditLog
 from app.models.team_invite import TeamInvite
+from app.models.job_request import JobRequest
 
 # Alembic Config object
 config = context.config
@@ -41,7 +42,9 @@ target_metadata = Base.metadata
 settings = get_settings()
 if settings.DATABASE_URL:
     db_url = settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
-    config.set_main_option("sqlalchemy.url", db_url)
+    config.set_main_option("sqlalchemy.url", db_url.replace("%", "%%"))
+else:
+    config.set_main_option("sqlalchemy.url", str(engine.url))
 
 
 def run_migrations_offline() -> None:

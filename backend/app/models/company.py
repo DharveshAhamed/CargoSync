@@ -18,6 +18,7 @@ class Company(Base):
     phone = Column(String(50), nullable=True)
     address = Column(Text, nullable=True)
     logo_url = Column(Text, nullable=True)
+    account_type = Column(String(30), nullable=False, default="company")  # company | trucker
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -31,3 +32,4 @@ class Company(Base):
     jobs = relationship("Job", back_populates="company", cascade="all, delete-orphan")
     claims = relationship("Claim", back_populates="company", cascade="all, delete-orphan")
     team_invites = relationship("TeamInvite", back_populates="company", cascade="all, delete-orphan")
+    job_requests = relationship("JobRequest", back_populates="trucker", cascade="all, delete-orphan")

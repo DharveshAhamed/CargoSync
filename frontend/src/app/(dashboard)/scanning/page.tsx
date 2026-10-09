@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import type { Job } from '@/types';
+import { getUser } from '@/lib/auth';
 
 export default function ScanningPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -10,7 +11,8 @@ export default function ScanningPage() {
   const [manifest, setManifest] = useState<any>(null);
   const [scanInput, setScanInput] = useState('');
   const [scanResult, setScanResult] = useState<any>(null);
-  const [scanType, setScanType] = useState<'loading' | 'delivery' | 'transit'>('loading');
+  const trucker = getUser()?.user_type === 'trucker';
+  const [scanType, setScanType] = useState<'loading' | 'delivery' | 'transit'>(trucker ? 'delivery' : 'loading');
 
   useEffect(() => { api.get('/jobs/').then(({ data }) => setJobs(data)).catch(() => { console.error("API request failed"); }); }, []);
 
@@ -37,8 +39,8 @@ export default function ScanningPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>QR Scanning</h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Scan cargo QR codes for loading, delivery, and transit monitoring</p>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>{trucker ? 'Unload & Delivery Scan' : 'Loading Scan'}</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{trucker ? 'Verify cargo while unloading or in transit.' : 'Verify each package against the loading manifest.'}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -47,7 +49,7 @@ export default function ScanningPage() {
           <h3 className="font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Scan QR Code</h3>
 
           <div className="flex gap-2 mb-4">
-            {(['loading', 'delivery', 'transit'] as const).map(type => (
+            {(trucker ? ['delivery', 'transit'] as const : ['loading'] as const).map(type => (
               <button key={type} onClick={() => setScanType(type)}
                 className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
                 style={scanType === type ? { backgroundColor: 'var(--color-primary)', color: 'white' } : { backgroundColor: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }}>

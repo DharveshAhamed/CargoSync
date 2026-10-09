@@ -16,6 +16,10 @@ class CompanyRegisterRequest(BaseModel):
     address: Optional[str] = None
 
 
+class TruckerRegisterRequest(CompanyRegisterRequest):
+    pass
+
+
 class AdminRegisterRequest(BaseModel):
     name: str
     email: str
@@ -55,7 +59,7 @@ class UserProfileResponse(BaseModel):
     role: str
     company_id: Optional[str] = None
     company_name: Optional[str] = None
-    user_type: str  # "admin" or "user"
+    user_type: str  # admin, company, or trucker
 
     model_config = {"from_attributes": True}
 

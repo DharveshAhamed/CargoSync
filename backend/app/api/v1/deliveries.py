@@ -12,6 +12,7 @@ from app.core.deps import get_db, require_company_user
 from app.models.delivery import Delivery
 from app.models.job import Job
 from app.models.audit_log import AuditLog
+from app.models.truck import Truck
 from app.schemas.delivery import DeliveryCreate, DeliveryUpdate, DeliveryResponse, PODSubmit
 
 router = APIRouter(prefix="/deliveries", tags=["Deliveries"])
@@ -26,10 +27,11 @@ def list_deliveries_for_job(
     """List all delivery stops for a job."""
     job = (
         db.query(Job)
-        .filter(Job.id == job_id, Job.company_id == current_user["company_id"])
+        .filter(Job.id == job_id)
         .first()
     )
-    if not job:
+    truck_owned = job and job.truck_id and db.query(Truck).filter(Truck.id == job.truck_id, Truck.company_id == current_user["company_id"]).first()
+    if not job or (job.company_id != current_user["company_id"] and not truck_owned):
         raise HTTPException(status_code=404, detail="Job not found")
 
     deliveries = (
@@ -103,6 +105,10 @@ def submit_proof_of_delivery(
     delivery = db.query(Delivery).filter(Delivery.id == delivery_id).first()
     if not delivery:
         raise HTTPException(status_code=404, detail="Delivery not found")
+    job = db.query(Job).filter(Job.id == delivery.job_id).first()
+    truck_owned = job and job.truck_id and db.query(Truck).filter(Truck.id == job.truck_id, Truck.company_id == current_user["company_id"]).first()
+    if not job or (job.company_id != current_user["company_id"] and not truck_owned):
+        raise HTTPException(status_code=403, detail="Access denied")
 
     # Update POD fields
     if data.signature_url:

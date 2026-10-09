@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.core.deps import get_db, require_company_user
+from app.core.deps import get_db, require_trucker
 from app.models.truck import Truck
 from app.schemas.truck import TruckCreate, TruckUpdate, TruckResponse
 
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/trucks", tags=["Trucks"])
 
 @router.get("/", response_model=List[TruckResponse])
 def list_trucks(
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """List all trucks for the current company."""
@@ -31,7 +31,7 @@ def list_trucks(
 @router.post("/", response_model=TruckResponse, status_code=status.HTTP_201_CREATED)
 def create_truck(
     data: TruckCreate,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Add a new truck to the fleet."""
@@ -53,7 +53,7 @@ def create_truck(
 @router.get("/{truck_id}", response_model=TruckResponse)
 def get_truck(
     truck_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Get a specific truck by ID."""
@@ -71,7 +71,7 @@ def get_truck(
 def update_truck(
     truck_id: str,
     data: TruckUpdate,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Update a truck's details."""
@@ -95,7 +95,7 @@ def update_truck(
 @router.delete("/{truck_id}")
 def deactivate_truck(
     truck_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Soft-delete (deactivate) a truck."""

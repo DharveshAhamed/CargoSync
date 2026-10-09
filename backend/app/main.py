@@ -20,6 +20,7 @@ from app.models.delivery import Delivery
 from app.models.claim import Claim
 from app.models.audit_log import AuditLog
 from app.models.team_invite import TeamInvite
+from app.models.job_request import JobRequest
 
 # Import routers
 from app.api.v1.auth import router as auth_router

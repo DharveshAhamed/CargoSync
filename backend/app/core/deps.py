@@ -56,7 +56,7 @@ def get_current_user(
     payload = decode_token(credentials.credentials)
     user_id = payload.get("sub")
     user_role = payload.get("role", "user")
-    user_type = payload.get("user_type", "user")  # "admin" or "user"
+    user_type = payload.get("user_type", "company")
 
     if not user_id:
         raise HTTPException(
@@ -89,4 +89,16 @@ def require_company_user(current_user: dict = Depends(get_current_user)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Company membership required",
         )
+    return current_user
+
+
+def require_shipper(current_user: dict = Depends(get_current_user)):
+    if current_user.get("user_type") != "company":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Company account required")
+    return current_user
+
+
+def require_trucker(current_user: dict = Depends(get_current_user)):
+    if current_user.get("user_type") != "trucker":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Trucker account required")
     return current_user

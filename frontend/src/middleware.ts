@@ -2,10 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Routes that don't require authentication
-const publicRoutes = ['/login', '/register', '/reset-password', '/admin/login'];
+const publicRoutes = ['/login', '/register', '/reset-password', '/admin/login', '/admin/register', '/company/login', '/company/register', '/trucker/login', '/trucker/register'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
 
   // Allow public routes
   if (publicRoutes.some((route) => pathname.startsWith(route))) {
@@ -19,11 +23,6 @@ export function middleware(request: NextRequest) {
     pathname.includes('.')
   ) {
     return NextResponse.next();
-  }
-
-  // For root path, redirect to login
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // Client-side auth check happens in the dashboard layout

@@ -5,12 +5,16 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import type { JobDetail } from '@/types';
+import { getUser } from '@/lib/auth';
 
 export default function JobDetailPage() {
   const { id } = useParams();
   const [job, setJob] = useState<JobDetail | null>(null);
   const [showAddBox, setShowAddBox] = useState(false);
   const [error, setError] = useState('');
+  const [rating, setRating] = useState(5);
+  const [feedback, setFeedback] = useState('');
+  const isCompany = getUser()?.user_type === 'company';
   const [boxForm, setBoxForm] = useState({ label_reference: '', length_cm: '', width_cm: '', height_cm: '', weight_kg: '', stop_order: '1', fragile: false, hazard: false });
 
   useEffect(() => { if (id) loadJob(); }, [id]);
@@ -56,6 +60,11 @@ export default function JobDetailPage() {
     }
   };
 
+  const submitRating = async () => {
+    try { await api.post(`/jobs/${id}/rating`, { rating, feedback }); loadJob(); }
+    catch (err:any) { setError(err.response?.data?.detail || 'Failed to submit feedback'); }
+  };
+
   if (!job) return <div className="flex items-center justify-center py-20"><div className="animate-pulse-warm w-8 h-8 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} /></div>;
 
   const statusFlow = ['draft', 'posted', 'matched', 'accepted', 'loading', 'in_transit', 'out_for_delivery', 'delivered'];
@@ -88,6 +97,8 @@ export default function JobDetailPage() {
         </div>
       </div>
 
+      {(job.description || job.pickup_location || job.delivery_location) && <div className="p-5 rounded-2xl mb-6" style={{background:'var(--color-card)',border:'1px solid var(--color-border-light)'}}><p className="text-sm font-semibold">{job.pickup_location || 'Pickup pending'} → {job.delivery_location || 'Destination pending'}</p>{job.description&&<p className="text-sm mt-2" style={{color:'var(--color-text-secondary)'}}>{job.description}</p>}</div>}
+
       {/* Status timeline */}
       <div className="p-5 rounded-2xl mb-6" style={{ backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border-light)' }}>
         <div className="flex items-center gap-1 overflow-x-auto pb-2">
@@ -112,6 +123,8 @@ export default function JobDetailPage() {
           ))}
         </div>
       </div>
+
+      {isCompany && job.status === 'delivered' && <div className="rounded-2xl p-5 mb-6" style={{background:'var(--color-card)',border:'1px solid var(--color-border-light)'}}><h2 className="font-semibold">Rate the driver</h2>{job.rating ? <p className="mt-3 text-sm">{'★'.repeat(job.rating)} <span style={{color:'var(--color-text-secondary)'}}>{job.feedback}</span></p> : <div className="mt-4 flex flex-col sm:flex-row gap-3"><select value={rating} onChange={e=>setRating(+e.target.value)} className="px-3 py-2.5 rounded-xl" style={{border:'1px solid var(--color-border)'}}>{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</select><input value={feedback} onChange={e=>setFeedback(e.target.value)} className="flex-1 px-3 py-2.5 rounded-xl" style={{border:'1px solid var(--color-border)'}} placeholder="Share feedback about this delivery"/><button onClick={submitRating} className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold" style={{background:'var(--color-primary)'}}>Submit</button></div>}</div>}
 
       {/* Truck info */}
       {job.truck && (

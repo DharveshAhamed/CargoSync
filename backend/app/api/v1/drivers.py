@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.core.deps import get_db, require_company_user
+from app.core.deps import get_db, require_trucker
 from app.models.driver import Driver
 from app.models.truck import Truck
 from app.schemas.driver import DriverCreate, DriverUpdate, DriverResponse
@@ -36,7 +36,7 @@ def _driver_to_response(driver: Driver) -> dict:
 
 @router.get("/", response_model=List[DriverResponse])
 def list_drivers(
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """List all drivers for the current company."""
@@ -52,7 +52,7 @@ def list_drivers(
 @router.post("/", response_model=DriverResponse, status_code=status.HTTP_201_CREATED)
 def create_driver(
     data: DriverCreate,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Add a new driver."""
@@ -69,7 +69,7 @@ def create_driver(
 @router.get("/{driver_id}", response_model=DriverResponse)
 def get_driver(
     driver_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Get a specific driver by ID."""
@@ -87,7 +87,7 @@ def get_driver(
 def update_driver(
     driver_id: str,
     data: DriverUpdate,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Update a driver's details."""
@@ -111,7 +111,7 @@ def update_driver(
 @router.delete("/{driver_id}")
 def deactivate_driver(
     driver_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Soft-delete (deactivate) a driver."""
@@ -137,7 +137,7 @@ def deactivate_driver(
 def assign_driver_to_truck(
     driver_id: str,
     truck_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Assign a driver to a truck. Unlinks from any previous truck."""
@@ -174,7 +174,7 @@ def assign_driver_to_truck(
 @router.post("/{driver_id}/unassign")
 def unassign_driver(
     driver_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(require_trucker),
     db: Session = Depends(get_db),
 ):
     """Remove a driver from their assigned truck."""

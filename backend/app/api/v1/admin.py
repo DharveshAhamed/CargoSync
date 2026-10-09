@@ -12,6 +12,10 @@ from app.core.security import hash_password
 from app.models.company import Company
 from app.models.user import User
 from app.models.admin import Admin
+from app.models.job import Job
+from app.models.truck import Truck
+from app.models.driver import Driver
+from app.models.audit_log import AuditLog
 from app.schemas.company import CompanyResponse, CompanyUpdate
 from app.schemas.admin import AdminUserCreate, AdminCompanyCreate, UserResponse, AuditLogResponse
 
@@ -24,7 +28,7 @@ def list_all_companies(
     db: Session = Depends(get_db),
 ):
     """List all registered companies."""
-    companies = db.query(Company).order_by(Company.created_at.desc()).all()
+    companies = db.query(Company).filter(Company.account_type == "company").order_by(Company.created_at.desc()).all()
     return companies
 
 
@@ -142,3 +146,41 @@ def admin_dashboard(
         "active_jobs": db.query(Job).filter(Job.status.in_(["in_transit", "out_for_delivery", "loading"])).count(),
         "completed_jobs": db.query(Job).filter(Job.status == "delivered").count(),
     }
+
+
+@router.get("/truckers")
+def list_truckers(current_user: dict = Depends(require_admin), db: Session = Depends(get_db)):
+    truckers = db.query(Company).filter(Company.account_type == "trucker").order_by(Company.created_at.desc()).all()
+    return [{"id": t.id, "name": t.name, "email": t.email, "phone": t.phone, "address": t.address,
+             "created_at": t.created_at,
+             "truck_count": db.query(Truck).filter(Truck.company_id == t.id).count(),
+             "driver_count": db.query(Driver).filter(Driver.company_id == t.id).count()} for t in truckers]
+
+
+@router.get("/truckers/{trucker_id}")
+def get_trucker_details(trucker_id: str, current_user: dict = Depends(require_admin), db: Session = Depends(get_db)):
+    trucker = db.query(Company).filter(Company.id == trucker_id, Company.account_type == "trucker").first()
+    if not trucker:
+        raise HTTPException(status_code=404, detail="Trucker not found")
+    trucks = db.query(Truck).filter(Truck.company_id == trucker.id).all()
+    drivers = db.query(Driver).filter(Driver.company_id == trucker.id).all()
+    return {"id": trucker.id, "name": trucker.name, "email": trucker.email, "phone": trucker.phone,
+            "address": trucker.address,
+            "trucks": [{"id": t.id, "truck_name": t.truck_name, "plate_number": t.plate_number,
+                        "max_weight_kg": t.max_weight_kg, "is_active": t.is_active} for t in trucks],
+            "drivers": [{"id": d.id, "name": d.name, "phone": d.phone,
+                         "license_number": d.license_number, "is_active": d.is_active} for d in drivers]}
+
+
+@router.get("/jobs")
+def list_all_jobs(current_user: dict = Depends(require_admin), db: Session = Depends(get_db)):
+    jobs = db.query(Job, Company).join(Company, Company.id == Job.company_id).order_by(Job.created_at.desc()).all()
+    return [{"id": job.id, "job_name": job.job_name, "status": job.status, "date": job.date,
+             "company_name": company.name, "truck_id": job.truck_id,
+             "pickup_location": job.pickup_location, "delivery_location": job.delivery_location} for job, company in jobs]
+
+
+@router.get("/logs")
+def list_all_logs(current_user: dict = Depends(require_admin), db: Session = Depends(get_db)):
+    logs = db.query(AuditLog).order_by(AuditLog.scanned_at.desc()).limit(500).all()
+    return logs

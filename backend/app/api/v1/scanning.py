@@ -14,6 +14,7 @@ from app.models.box import Box
 from app.models.job import Job
 from app.models.delivery import Delivery
 from app.models.audit_log import AuditLog
+from app.models.truck import Truck
 
 router = APIRouter(prefix="/scanning", tags=["Scanning"])
 
@@ -53,6 +54,15 @@ def validate_scan(
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+    truck_owned = job.truck_id and db.query(Truck).filter(
+        Truck.id == job.truck_id, Truck.company_id == current_user["company_id"]
+    ).first()
+    if job.company_id != current_user["company_id"] and not truck_owned:
+        raise HTTPException(status_code=403, detail="This job is not assigned to your account")
+    if current_user["user_type"] == "company" and data.scan_type != "loading":
+        raise HTTPException(status_code=403, detail="Companies can only record loading scans")
+    if current_user["user_type"] == "trucker" and data.scan_type not in ("delivery", "transit"):
+        raise HTTPException(status_code=403, detail="Truckers can only record transit or unloading scans")
 
     # Record the scan in audit log
     action = f"{data.scan_type}_scanned"
@@ -126,10 +136,13 @@ def get_loading_manifest(
     """Get the loading manifest for a job with scan status."""
     job = (
         db.query(Job)
-        .filter(Job.id == job_id, Job.company_id == current_user["company_id"])
+        .filter(Job.id == job_id)
         .first()
     )
-    if not job:
+    truck_owned = job and job.truck_id and db.query(Truck).filter(
+        Truck.id == job.truck_id, Truck.company_id == current_user["company_id"]
+    ).first()
+    if not job or (job.company_id != current_user["company_id"] and not truck_owned):
         raise HTTPException(status_code=404, detail="Job not found")
 
     boxes = db.query(Box).filter(Box.job_id == job_id).order_by(Box.stop_order).all()

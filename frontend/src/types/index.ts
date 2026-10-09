@@ -11,7 +11,7 @@ export interface User {
   role: string;
   company_id?: string;
   company_name?: string;
-  user_type: 'admin' | 'user';
+  user_type: 'admin' | 'company' | 'trucker';
 }
 
 export interface AuthTokens {
@@ -68,11 +68,16 @@ export interface Job {
   job_name: string;
   date: string;
   time_window?: string;
+  description?: string;
+  pickup_location?: string;
+  delivery_location?: string;
   status: JobStatus;
   packing_data?: string;
   created_at: string;
   box_count?: number;
   delivery_count?: number;
+  rating?: number;
+  feedback?: string;
 }
 
 export type JobStatus =

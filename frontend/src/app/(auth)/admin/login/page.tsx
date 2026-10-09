@@ -95,11 +95,14 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="mt-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+        <div className="mt-6 text-center text-sm space-y-3" style={{ color: 'var(--color-text-muted)' }}>
+          <p>First time here? <Link href="/admin/register" className="font-semibold hover:underline" style={{color:'var(--color-text)'}}>Create the first admin account</Link></p>
+          <p>
           <Link href="/login" className="hover:underline" style={{ color: 'var(--color-text-secondary)' }}>
-            ← Back to user login
+            ← Back to all portals
           </Link>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   );
