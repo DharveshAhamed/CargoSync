@@ -10,11 +10,12 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.core.deps import get_db, require_company_user
+from app.core.deps import get_db, get_current_user
 from app.models.box import Box
 from app.models.job import Job
 from app.models.audit_log import AuditLog
 from app.services.qr_service import generate_qr_code_svg, generate_qr_data
+from app.services.access import get_job_or_404
 
 router = APIRouter(prefix="/qr", tags=["QR Codes"])
 
@@ -22,17 +23,11 @@ router = APIRouter(prefix="/qr", tags=["QR Codes"])
 @router.post("/generate/{job_id}")
 def generate_qr_codes_for_job(
     job_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Generate QR codes for all boxes in a job."""
-    job = (
-        db.query(Job)
-        .filter(Job.id == job_id, Job.company_id == current_user["company_id"])
-        .first()
-    )
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
+    job = get_job_or_404(job_id, current_user, db)
 
     boxes = db.query(Box).filter(Box.job_id == job_id).all()
     if not boxes:
@@ -42,10 +37,12 @@ def generate_qr_codes_for_job(
     for box in boxes:
         qr_data = generate_qr_data(box, job)
         box.qr_code = qr_data
+        svg = generate_qr_code_svg(qr_data, box.label_reference)
         results.append({
             "box_id": box.id,
             "label": box.label_reference,
             "qr_data": qr_data,
+            "svg": svg,
         })
 
         # Audit log
@@ -65,7 +62,7 @@ def generate_qr_codes_for_job(
 @router.get("/label/{box_id}")
 def get_qr_label(
     box_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get a printable QR label for a specific box."""
@@ -73,13 +70,7 @@ def get_qr_label(
     if not box:
         raise HTTPException(status_code=404, detail="Box not found")
 
-    job = (
-        db.query(Job)
-        .filter(Job.id == box.job_id, Job.company_id == current_user["company_id"])
-        .first()
-    )
-    if not job:
-        raise HTTPException(status_code=403, detail="Access denied")
+    job = get_job_or_404(box.job_id, current_user, db)
 
     qr_data = box.qr_code or generate_qr_data(box, job)
     svg_content = generate_qr_code_svg(qr_data, box.label_reference)
@@ -94,17 +85,11 @@ def get_qr_label(
 @router.get("/labels/{job_id}")
 def get_all_labels_for_job(
     job_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Get all QR labels for a job as SVG data."""
-    job = (
-        db.query(Job)
-        .filter(Job.id == job_id, Job.company_id == current_user["company_id"])
-        .first()
-    )
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
+    job = get_job_or_404(job_id, current_user, db)
 
     boxes = db.query(Box).filter(Box.job_id == job_id).order_by(Box.stop_order).all()
     labels = []

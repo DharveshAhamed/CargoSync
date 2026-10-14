@@ -1,2 +1,5 @@
-import RoleLogin from '@/components/RoleLogin';
-export default function CompanyLogin(){return <RoleLogin role="company"/>}
+import { redirect } from 'next/navigation';
+
+export default function CompanyLoginPage() {
+  redirect('/?role=company&mode=login#access');
+}

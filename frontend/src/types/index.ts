@@ -93,7 +93,8 @@ export type JobStatus =
 export interface JobDetail extends Job {
   boxes: Box[];
   deliveries: Delivery[];
-  truck?: Truck;
+  truck?: any;
+  company?: any;
 }
 
 export interface Box {
@@ -146,9 +147,12 @@ export interface AuditLog {
 
 export interface PackingResult {
   placements: Placement[];
+  previous_placements?: Placement[];
   unpacked: { id: string; label: string; reason: string }[];
   efficiency: number;
   total_weight: number;
+  current_job_weight?: number;
+  previous_jobs_weight?: number;
   weight_capacity_used: number;
   truck_dimensions: { length: number; width: number; height: number };
 }
@@ -165,7 +169,12 @@ export interface Placement {
   rotation: number;
   stop_order: number;
   fragile: boolean;
+  job_id?: string;
+  job_name?: string;
+  is_previous_job?: boolean;
 }
+
+export type BoxPlacement = Placement;
 
 export interface TeamInvite {
   id: string;

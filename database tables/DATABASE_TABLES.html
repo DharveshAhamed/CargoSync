@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CargoSync Database Tables Documentation</title>
+<style>
+  body { font-family: 'Times New Roman', Times, serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; color: #000000; background: #ffffff; line-height: 1.5; padding: 40px; max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 24pt; border-bottom: 2px solid #000000; padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  h2 { font-size: 16pt; border-bottom: 1px solid #000000; padding-bottom: 4px; margin-top: 32px; margin-bottom: 12px; text-transform: uppercase; }
+  h3 { font-size: 13pt; margin-top: 24px; margin-bottom: 6px; font-weight: bold; }
+  p, li { font-size: 11pt; color: #000000; }
+  .meta-box { border: 1px solid #000000; padding: 12px 16px; margin: 20px 0; background: #fdfdfd; }
+  .meta-box p { margin: 4px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px 0; font-size: 10pt; page-break-inside: avoid; }
+  th { border: 1.5px solid #000000; background-color: #f2f2f2; color: #000000; padding: 8px 10px; font-weight: bold; text-align: left; }
+  td { border: 1px solid #000000; padding: 6px 10px; vertical-align: top; color: #000000; }
+  tr:nth-child(even) td { background-color: #fafafa; }
+  .code { font-family: 'Courier New', Courier, monospace; font-size: 9.5pt; font-weight: 600; }
+  .btn-copy { background: #000000; color: #ffffff; border: 1px solid #000000; padding: 6px 14px; font-size: 9pt; cursor: pointer; border-radius: 4px; float: right; margin-top: -30px; }
+  .btn-copy:hover { background: #333333; }
+  .notice { font-style: italic; font-size: 10pt; margin-top: 4px; color: #333333; }
+  @media print { body { padding: 0; } .btn-copy { display: none; } }
+</style>
+<script>
+function copyTable(tableId) {
+  const el = document.getElementById(tableId);
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  document.execCommand('copy');
+  alert('Table copied to clipboard! You can now paste directly into Microsoft Word (Ctrl+V).');
+}
+function copyEntireDoc() {
+  const range = document.createRange();
+  range.selectNodeContents(document.body);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  document.execCommand('copy');
+  alert('Entire document copied to clipboard! You can now paste directly into Microsoft Word (Ctrl+V).');
+}
+</script>
+</head>
+<body>
+<button class="btn-copy" style="float: right; margin-top: 0; padding: 8px 16px; font-weight: bold;" onclick="copyEntireDoc()">📋 Copy All Tables for MS Word</button>
+<h1>CargoSync — Database Tables Documentation</h1>
+<div class="meta-box">
+  <p><strong>Project Name:</strong> CargoSync — Intelligent Freight and Fleet Orchestration</p>
+  <p><strong>Subsystem:</strong> Relational Database Management System (PostgreSQL / SQLite)</p>
+  <p><strong>ORM & Data Framework:</strong> SQLAlchemy 2.0 / Pydantic V2 / FastAPI</p>
+  <p><strong>Total Entity Tables:</strong> 12 Normalized Relational Tables</p>
+  <p class="notice">Tip: Select any table below or click "Copy Table" to paste clean, formatted tables with native borders directly into your Microsoft Word or Google Docs project report.</p>
+</div>
+<h2>1. Schema Inventory Summary</h2>
+<table id="summary_table">
+  <thead>
+    <tr>
+      <th style="width: 5%;">#</th>
+      <th style="width: 18%;">Table Name</th>
+      <th style="width: 15%;">Primary Key</th>
+      <th style="width: 12%;">Foreign Keys</th>
+      <th style="width: 10%;">Columns</th>
+      <th>Core Functional Scope</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td class="code">companies</td>
+      <td class="code">id</td>
+      <td>0 FK(s)</td>
+      <td>8 cols</td>
+      <td>Represents business organizations using the platform, categorized either as commercial shippers or independent trucking fleet carriers.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td class="code">users</td>
+      <td class="code">id</td>
+      <td>1 FK(s)</td>
+      <td>9 cols</td>
+      <td>Stores user authentication credentials, assigned roles, and profile attributes for company managers, dispatchers, and staff.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td class="code">admins</td>
+      <td class="code">id</td>
+      <td>0 FK(s)</td>
+      <td>6 cols</td>
+      <td>Stores platform-level super administrators and support personnel responsible for system governance, user approval, and dispute resolution.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td class="code">drivers</td>
+      <td class="code">id</td>
+      <td>1 FK(s)</td>
+      <td>10 cols</td>
+      <td>Represents professional commercial vehicle drivers employed by trucking fleets, tracking licensing and assignment records.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td class="code">trucks</td>
+      <td class="code">id</td>
+      <td>2 FK(s)</td>
+      <td>13 cols</td>
+      <td>Catalogs fleet transport vehicles and cargo containers with accurate physical dimensions and payload capacities for 3D bin packing calculations.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td class="code">jobs</td>
+      <td class="code">id</td>
+      <td>2 FK(s)</td>
+      <td>14 cols</td>
+      <td>Core operational entity representing a freight transport contract, tracking shipment milestones, 3D cargo packing manifests, and journey state.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td class="code">boxes</td>
+      <td class="code">id</td>
+      <td>1 FK(s)</td>
+      <td>16 cols</td>
+      <td>Represents individual packaged cargo items with 3D physical dimensions, weight, handling flags, and bin packing coordinate positions.</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td class="code">deliveries</td>
+      <td class="code">id</td>
+      <td>2 FK(s)</td>
+      <td>14 cols</td>
+      <td>Tracks delivery waypoints, recipients, electronic Proof of Delivery (e-POD), signatures, and geolocation coordinates.</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td class="code">job_requests</td>
+      <td class="code">id</td>
+      <td>3 FK(s)</td>
+      <td>7 cols</td>
+      <td>Facilitates carrier marketplace bidding, where trucking companies submit bids or accept assignments for posted freight jobs.</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td class="code">claims</td>
+      <td class="code">id</td>
+      <td>2 FK(s)</td>
+      <td>8 cols</td>
+      <td>Manages damage claims, cargo loss incidents, and freight disputes between shippers and carriers with administrative adjudication.</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td class="code">audit_logs</td>
+      <td class="code">id</td>
+      <td>3 FK(s)</td>
+      <td>9 cols</td>
+      <td>Immutable security and chain-of-custody tracking log recording every scan, status update, geofence trigger, and transit checkpoint.</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td class="code">team_invites</td>
+      <td class="code">id</td>
+      <td>1 FK(s)</td>
+      <td>8 cols</td>
+      <td>Secures organizational member onboarding through time-limited cryptographic tokens for new dispatchers and staff.</td>
+    </tr>
+  </tbody>
+</table>
+<h2>2. Detailed Data Dictionaries & Table Definitions</h2>
+<div id="section_companies" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_companies')">📋 Copy Table</button>
+  <h3>Table 1: <span class="code">companies</span></h3>
+  <p><strong>Functional Description:</strong> Represents business organizations using the platform, categorized either as commercial shippers or independent trucking fleet carriers.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <em>None (Root Entity)</em>
+  </p>
+  <table id="table_companies">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the organization entity</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Registered legal business or corporate company name</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>email</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>UNIQUE</td>
+        <td class="code">-</td>
+        <td>Primary corporate contact and administration email address</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>phone</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Business telephone contact number</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>address</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Registered physical headquarters or corporate office address</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>logo_url</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Cloud storage URL pointing to company branding asset/logo</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>account_type</strong></td>
+        <td class="code">VARCHAR(30)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'company'</td>
+        <td>Account categorization: 'company' (shipper) or 'trucker' (carrier)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when the company profile was registered</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>1-to-Many with users (1 company employs many users)</li>
+    <li>1-to-Many with trucks (1 company owns many trucks)</li>
+    <li>1-to-Many with drivers (1 company employs many drivers)</li>
+    <li>1-to-Many with jobs (1 company posts many freight jobs)</li>
+    <li>1-to-Many with claims (1 company files many claims)</li>
+    <li>1-to-Many with team_invites (1 company issues many team invites)</li>
+    <li>1-to-Many with job_requests (1 trucker company receives/issues many bids)</li>
+  </ul>
+</div>
+<div id="section_users" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_users')">📋 Copy Table</button>
+  <h3>Table 2: <span class="code">users</span></h3>
+  <p><strong>Functional Description:</strong> Stores user authentication credentials, assigned roles, and profile attributes for company managers, dispatchers, and staff.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">company_id</span> &rarr; <span class="code">companies.id</span>
+  </p>
+  <table id="table_users">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique identifier for the user account</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>company_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking user to their parent company</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Full personal name of the account holder</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>email</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>UNIQUE</td>
+        <td class="code">-</td>
+        <td>Official login email address and communication channel</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>password_hash</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Bcrypt/Argon2 one-way cryptographically hashed password</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>phone</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Direct mobile contact number</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>location</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Designated dispatch location, branch, or home depot</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>role</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'user'</td>
+        <td>Access control role: 'user', 'manager', or 'driver'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when user registration occurred</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with companies (Many users belong to 1 company)</li>
+    <li>1-to-Many with audit_logs (1 user performs many audited system actions)</li>
+  </ul>
+</div>
+<div id="section_admins" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_admins')">📋 Copy Table</button>
+  <h3>Table 3: <span class="code">admins</span></h3>
+  <p><strong>Functional Description:</strong> Stores platform-level super administrators and support personnel responsible for system governance, user approval, and dispute resolution.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <em>None (Root Entity)</em>
+  </p>
+  <table id="table_admins">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for administrative personnel</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Full name of the system administrator</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>email</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>UNIQUE</td>
+        <td class="code">-</td>
+        <td>Administrative login email address</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>password_hash</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Secure cryptographic password hash</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>role</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'super_admin'</td>
+        <td>Governance tier: 'super_admin' or 'support'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp of administrator provisioning</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Platform-level governance over all companies, jobs, claims, and audit logs</li>
+  </ul>
+</div>
+<div id="section_drivers" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_drivers')">📋 Copy Table</button>
+  <h3>Table 4: <span class="code">drivers</span></h3>
+  <p><strong>Functional Description:</strong> Represents professional commercial vehicle drivers employed by trucking fleets, tracking licensing and assignment records.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">company_id</span> &rarr; <span class="code">companies.id</span>
+  </p>
+  <table id="table_drivers">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique identifier for the commercial driver record</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>company_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking driver to the employing trucking company</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Full legal name of the licensed commercial driver</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>email</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Driver personal or dispatch email address</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>phone</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Driver mobile phone number for transit communication</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>license_number</strong></td>
+        <td class="code">VARCHAR(100)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Commercial Driver's License (CDL) registration identifier</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>license_expiry</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Official expiration date of the commercial license</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>notes</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Medical certifications, endorsements, or driving notes</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>is_active</strong></td>
+        <td class="code">BOOLEAN</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">TRUE</td>
+        <td>Status flag indicating driver operational availability</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when the driver profile was created</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with companies (Many drivers belong to 1 company)</li>
+    <li>1-to-1 with trucks (1 driver is actively assigned to 1 vehicle at a time)</li>
+  </ul>
+</div>
+<div id="section_trucks" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_trucks')">📋 Copy Table</button>
+  <h3>Table 5: <span class="code">trucks</span></h3>
+  <p><strong>Functional Description:</strong> Catalogs fleet transport vehicles and cargo containers with accurate physical dimensions and payload capacities for 3D bin packing calculations.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">company_id</span> &rarr; <span class="code">companies.id</span>, <span class="code">driver_id</span> &rarr; <span class="code">drivers.id</span>
+  </p>
+  <table id="table_trucks">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the fleet vehicle</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>company_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking vehicle to the owning transport firm</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>driver_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>YES</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">NULL</td>
+        <td>Foreign key linking vehicle to the assigned primary driver</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>truck_name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Vehicle fleet designation (e.g., 'Freightliner Cascadia #12')</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>plate_number</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>UNIQUE</td>
+        <td class="code">-</td>
+        <td>Government-registered license plate alphanumeric number</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>length_cm</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Internal cargo bay usable container length (centimeters)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>width_cm</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Internal cargo bay usable container width (centimeters)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>height_cm</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Internal cargo bay usable container height (centimeters)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>max_weight_kg</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Maximum gross payload carrying capacity (kilograms)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>driver_name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Legacy fallback driver name record</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>availability_schedule</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>JSON serialized operating calendar and time slots</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>is_active</strong></td>
+        <td class="code">BOOLEAN</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">TRUE</td>
+        <td>Fleet operational readiness status flag</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when vehicle was added to inventory</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with companies (Many trucks belong to 1 company)</li>
+    <li>1-to-1 with drivers (1 truck is operated by 1 assigned driver)</li>
+    <li>1-to-Many with jobs (1 truck executes multiple freight jobs across its lifecycle)</li>
+    <li>1-to-Many with job_requests (1 truck can be requested for multiple jobs)</li>
+  </ul>
+</div>
+<div id="section_jobs" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_jobs')">📋 Copy Table</button>
+  <h3>Table 6: <span class="code">jobs</span></h3>
+  <p><strong>Functional Description:</strong> Core operational entity representing a freight transport contract, tracking shipment milestones, 3D cargo packing manifests, and journey state.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">company_id</span> &rarr; <span class="code">companies.id</span>, <span class="code">truck_id</span> &rarr; <span class="code">trucks.id</span>
+  </p>
+  <table id="table_jobs">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the freight job</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>company_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking shipment to the originating shipper</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>truck_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>YES</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">NULL</td>
+        <td>Foreign key linking job to the assigned transport vehicle</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>job_name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Descriptive job title (e.g., 'Perishable Produce Dispatch - NYC to BOS')</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>date</strong></td>
+        <td class="code">DATE</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Scheduled date for cargo pickup and transit initiation</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>time_window</strong></td>
+        <td class="code">VARCHAR(100)</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Permissible pickup/delivery time range (e.g. '09:00-17:00')</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>description</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Detailed cargo profile and handling requirements</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>pickup_location</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Full origin facility address, dock number, and city</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>delivery_location</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Final destination facility address or distribution hub</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>status</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'draft'</td>
+        <td>State lifecycle: 'draft', 'posted', 'matched', 'accepted', 'loading', 'in_transit', 'out_for_delivery', 'delivered'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>packing_data</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>JSON payload containing 3D bin packing coordinates and box rotations</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>rating</strong></td>
+        <td class="code">INTEGER</td>
+        <td>YES</td>
+        <td>CHECK (1-5)</td>
+        <td class="code">NULL</td>
+        <td>Customer satisfaction star rating score (1 to 5)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>feedback</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Post-trip review commentary from the shipper</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when shipment order was initiated</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with companies (Many jobs posted by 1 shipper)</li>
+    <li>Many-to-1 with trucks (Many jobs fulfilled by 1 truck)</li>
+    <li>1-to-Many with boxes (1 job contains multiple cargo boxes)</li>
+    <li>1-to-Many with deliveries (1 job comprises multiple waypoint delivery stops)</li>
+    <li>1-to-Many with claims (1 job may experience dispute claims)</li>
+    <li>1-to-Many with audit_logs (1 job generates full timeline of custody events)</li>
+    <li>1-to-Many with job_requests (1 job receives multiple carrier bids)</li>
+  </ul>
+</div>
+<div id="section_boxes" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_boxes')">📋 Copy Table</button>
+  <h3>Table 7: <span class="code">boxes</span></h3>
+  <p><strong>Functional Description:</strong> Represents individual packaged cargo items with 3D physical dimensions, weight, handling flags, and bin packing coordinate positions.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">job_id</span> &rarr; <span class="code">jobs.id</span>
+  </p>
+  <table id="table_boxes">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the individual cargo box</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>job_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking box to its associated parent freight job</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>label_reference</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Item label identifier or internal warehouse SKU</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>length_cm</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Physical external length of the cargo carton (cm)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>width_cm</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Physical external width of the cargo carton (cm)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>height_cm</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Physical external height of the cargo carton (cm)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>weight_kg</strong></td>
+        <td class="code">FLOAT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Individual carton gross mass/weight (kg)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>stop_order</strong></td>
+        <td class="code">INTEGER</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">1</td>
+        <td>Delivery route drop-off sequence (governs LIFO loading order)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>fragile</strong></td>
+        <td class="code">BOOLEAN</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">FALSE</td>
+        <td>Fragility flag (prevents heavy stacking above during packing)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>hazard</strong></td>
+        <td class="code">BOOLEAN</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">FALSE</td>
+        <td>Hazardous materials flag requiring regulatory segregation</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>qr_code</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Encrypted QR code data string and verification checksum</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>pack_x</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Calculated 3D Cartesian X-offset coordinate in truck bed (cm)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>pack_y</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Calculated 3D Cartesian Y-offset coordinate in truck bed (cm)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>pack_z</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Calculated 3D Cartesian Z-offset (elevation) in truck bed (cm)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>pack_rotation</strong></td>
+        <td class="code">INTEGER</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">0</td>
+        <td>Orthogonal 3D orientation index (0 to 5, across 6 degrees of freedom)</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when box specification was recorded</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with jobs (Many boxes belong to 1 job)</li>
+    <li>1-to-1 with deliveries (1 box can be tied directly to a waypoint delivery)</li>
+    <li>1-to-Many with audit_logs (1 box has individual scan and custody events)</li>
+  </ul>
+</div>
+<div id="section_deliveries" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_deliveries')">📋 Copy Table</button>
+  <h3>Table 8: <span class="code">deliveries</span></h3>
+  <p><strong>Functional Description:</strong> Tracks delivery waypoints, recipients, electronic Proof of Delivery (e-POD), signatures, and geolocation coordinates.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">job_id</span> &rarr; <span class="code">jobs.id</span>, <span class="code">box_id</span> &rarr; <span class="code">boxes.id</span>
+  </p>
+  <table id="table_deliveries">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the delivery waypoint stop</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>job_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking delivery stop to the overall freight job</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>box_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>YES</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">NULL</td>
+        <td>Optional foreign key linking stop to a specific cargo unit</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>stop_order</strong></td>
+        <td class="code">INTEGER</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">1</td>
+        <td>Sequential destination stop index along the transit corridor</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>recipient_name</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Name of the designated consignee or receiving party</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>address</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Physical delivery destination street address and gate notes</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>signature_url</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Cloud storage URL for captured digital e-signature image</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>photo_url</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Cloud storage URL for cargo condition photographic evidence</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>gps_lat</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>GPS latitude coordinate captured at point of electronic handover</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>gps_lng</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>GPS longitude coordinate captured at point of electronic handover</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>notes</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Consignee delivery remarks or access instructions</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>delivered_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Actual timestamp of successful parcel handover and verification</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>status</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'pending'</td>
+        <td>Stop status: 'pending', 'scanned', 'in_transit', 'arrived', 'delivered'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when delivery milestone was scheduled</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with jobs (Many delivery stops belong to 1 job)</li>
+    <li>1-to-1 with boxes (1 delivery waypoint corresponds to 1 box)</li>
+  </ul>
+</div>
+<div id="section_job_requests" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_job_requests')">📋 Copy Table</button>
+  <h3>Table 9: <span class="code">job_requests</span></h3>
+  <p><strong>Functional Description:</strong> Facilitates carrier marketplace bidding, where trucking companies submit bids or accept assignments for posted freight jobs.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">job_id</span> &rarr; <span class="code">jobs.id</span>, <span class="code">truck_id</span> &rarr; <span class="code">trucks.id</span>, <span class="code">trucker_id</span> &rarr; <span class="code">companies.id</span>
+  </p>
+  <table id="table_job_requests">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the marketplace proposal/bid</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>job_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key identifying the requested freight shipment</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>truck_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key identifying the carrier's proposed vehicle</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>trucker_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key identifying the bidding trucking enterprise</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>message</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Carrier remarks, service terms, or dispatch availability message</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>status</strong></td>
+        <td class="code">VARCHAR(30)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'pending'</td>
+        <td>Proposal disposition: 'pending', 'accepted', 'rejected'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when the job proposal was submitted</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with jobs (Many requests submitted for 1 job)</li>
+    <li>Many-to-1 with trucks (Many requests associate with 1 vehicle)</li>
+    <li>Many-to-1 with companies (Many requests issued by 1 carrier company)</li>
+  </ul>
+</div>
+<div id="section_claims" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_claims')">📋 Copy Table</button>
+  <h3>Table 10: <span class="code">claims</span></h3>
+  <p><strong>Functional Description:</strong> Manages damage claims, cargo loss incidents, and freight disputes between shippers and carriers with administrative adjudication.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">company_id</span> &rarr; <span class="code">companies.id</span>, <span class="code">job_id</span> &rarr; <span class="code">jobs.id</span>
+  </p>
+  <table id="table_claims">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the dispute claim</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>company_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking claim to the filing claimant company</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>job_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking claim to the contested freight shipment</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>description</strong></td>
+        <td class="code">TEXT</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Detailed factual report of cargo impairment, delay, or damage</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>proof_url</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Cloud storage link to photographic damage proof or bill of lading</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>status</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'open'</td>
+        <td>Dispute status: 'open', 'reviewing', 'resolved', 'rejected'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>admin_notes</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>Super admin review remarks, settlement determination, or findings</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when the claim incident was logged</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with companies (Many claims filed by 1 company)</li>
+    <li>Many-to-1 with jobs (Many claims tied to 1 job)</li>
+  </ul>
+</div>
+<div id="section_audit_logs" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_audit_logs')">📋 Copy Table</button>
+  <h3>Table 11: <span class="code">audit_logs</span></h3>
+  <p><strong>Functional Description:</strong> Immutable security and chain-of-custody tracking log recording every scan, status update, geofence trigger, and transit checkpoint.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">job_id</span> &rarr; <span class="code">jobs.id</span>, <span class="code">box_id</span> &rarr; <span class="code">boxes.id</span>, <span class="code">user_id</span> &rarr; <span class="code">users.id</span>
+  </p>
+  <table id="table_audit_logs">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique system identifier for the telemetry audit record</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>job_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key linking event to the active freight job</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>box_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>YES</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">NULL</td>
+        <td>Optional foreign key identifying specific parcel scanned</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>user_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>YES</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">NULL</td>
+        <td>Foreign key identifying operator or driver responsible for event</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>action</strong></td>
+        <td class="code">VARCHAR(100)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Event action: 'box_created', 'qr_generated', 'loading_scanned', 'transit_started', 'tamper_detected', 'delivery_scanned', 'pod_submitted', 'status_changed'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>details</strong></td>
+        <td class="code">TEXT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>JSON snapshot of event metadata, barcode data, or device state</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>gps_lat</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>GPS latitude recorded at the exact moment of barcode scan</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>gps_lng</strong></td>
+        <td class="code">FLOAT</td>
+        <td>YES</td>
+        <td>None</td>
+        <td class="code">NULL</td>
+        <td>GPS longitude recorded at the exact moment of barcode scan</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>scanned_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC immutable timestamp of transaction execution</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with jobs (Many audit events occur under 1 job)</li>
+    <li>Many-to-1 with boxes (Many audit events reference 1 box)</li>
+    <li>Many-to-1 with users (Many audit events triggered by 1 user)</li>
+  </ul>
+</div>
+<div id="section_team_invites" style="margin-top: 36px;">
+  <button class="btn-copy" onclick="copyTable('table_team_invites')">📋 Copy Table</button>
+  <h3>Table 12: <span class="code">team_invites</span></h3>
+  <p><strong>Functional Description:</strong> Secures organizational member onboarding through time-limited cryptographic tokens for new dispatchers and staff.</p>
+  <p>
+    <strong>Primary Key:</strong> <span class="code">id</span> | 
+<strong>Foreign Keys:</strong> <span class="code">company_id</span> &rarr; <span class="code">companies.id</span>
+  </p>
+  <table id="table_team_invites">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Column Name</th>
+        <th style="width: 14%;">Data Type</th>
+        <th style="width: 10%;">Nullable</th>
+        <th style="width: 16%;">Constraint / Key</th>
+        <th style="width: 14%;">Default Value</th>
+        <th style="width: 28%;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="code"><strong>id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>PRIMARY KEY</td>
+        <td class="code">UUIDv4</td>
+        <td>Unique identifier for the onboarding invitation</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>company_id</strong></td>
+        <td class="code">VARCHAR(36)</td>
+        <td>NO</td>
+        <td>FOREIGN KEY</td>
+        <td class="code">-</td>
+        <td>Foreign key identifying inviting corporate organization</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>email</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">-</td>
+        <td>Target corporate email address invited to join workspace</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>role</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'user'</td>
+        <td>Assigned member authorization level: 'user', 'manager', 'driver'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>token</strong></td>
+        <td class="code">VARCHAR(255)</td>
+        <td>NO</td>
+        <td>UNIQUE</td>
+        <td class="code">-</td>
+        <td>Cryptographic single-use URL invitation validation token</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>status</strong></td>
+        <td class="code">VARCHAR(50)</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">'pending'</td>
+        <td>Token lifecycle status: 'pending', 'accepted', 'expired'</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>created_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP</td>
+        <td>UTC timestamp when the invitation email was dispatched</td>
+      </tr>
+      <tr>
+        <td class="code"><strong>expires_at</strong></td>
+        <td class="code">TIMESTAMPTZ</td>
+        <td>NO</td>
+        <td>None</td>
+        <td class="code">CURRENT_TIMESTAMP + 7d</td>
+        <td>UTC timestamp when invitation token automatically expires</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>Entity Relationships:</strong></p>
+  <ul>
+    <li>Many-to-1 with companies (Many invites issued by 1 company)</li>
+  </ul>
+</div>
+</body>
+</html>

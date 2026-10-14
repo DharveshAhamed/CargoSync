@@ -35,7 +35,8 @@ export function logout() {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
-  window.location.href = user?.user_type === 'admin' ? '/admin/login' : user?.user_type === 'trucker' ? '/trucker/login' : '/company/login';
+  const roleParam = user?.user_type ? `?role=${user.user_type}` : '';
+  window.location.href = `/${roleParam}#access`;
 }
 
 export function isAdmin(): boolean {

@@ -90,7 +90,7 @@ export default function DashboardPage() {
         {[
           { href: '/jobs/new', label: 'Create New Job', desc: 'Start a new freight job', color: 'var(--color-primary)' },
           { href: '/trucks', label: 'Manage Fleet', desc: 'Add or edit trucks', color: 'var(--color-secondary)' },
-          { href: '/scanning', label: 'Scan Cargo', desc: 'Scan QR codes', color: 'var(--color-accent)' },
+          { href: '/scanning', label: 'Cargo Checklist', desc: 'Verify & approve cargo', color: 'var(--color-accent)' },
         ].map((action) => (
           <Link
             key={action.href}

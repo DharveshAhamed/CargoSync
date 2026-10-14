@@ -5,6 +5,7 @@ Handles: company registration, user/admin login, password reset, profile
 
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_db, get_current_user
@@ -103,16 +104,18 @@ def login_trucker(data: LoginRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/admin/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-def register_first_admin(data: AdminRegisterRequest, db: Session = Depends(get_db)):
-    """Create the first platform administrator; disabled after initial setup."""
-    if db.query(Admin).count() > 0:
+def register_admin(data: AdminRegisterRequest, db: Session = Depends(get_db)):
+    """Register a platform administrator."""
+    clean_email = data.email.strip().lower()
+    existing = db.query(Admin).filter(func.lower(func.trim(Admin.email)) == clean_email).first()
+    if existing:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Administrator setup is complete. Sign in with the existing admin account.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="An administrator with this email is already registered. Please sign in or use another email.",
         )
     admin = Admin(
-        name=data.name,
-        email=data.email,
+        name=data.name.strip(),
+        email=clean_email,
         password_hash=hash_password(data.password),
         role="super_admin",
     )
@@ -131,8 +134,9 @@ def register_first_admin(data: AdminRegisterRequest, db: Session = Depends(get_d
 @router.post("/admin/login", response_model=TokenResponse)
 def login_admin(data: LoginRequest, db: Session = Depends(get_db)):
     """Login for platform administrators."""
-    admin = db.query(Admin).filter(Admin.email == data.email).first()
-    if not admin or not verify_password(data.password, admin.password_hash):
+    clean_email = data.email.strip().lower()
+    admin = db.query(Admin).filter(func.lower(func.trim(Admin.email)) == clean_email).first()
+    if not admin or not verify_password(data.password.strip(), admin.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -157,6 +161,21 @@ def login_admin(data: LoginRequest, db: Session = Depends(get_db)):
             "user_type": "admin",
         },
     )
+
+
+@router.post("/admin/reset-password")
+def reset_admin_password(data: LoginRequest, db: Session = Depends(get_db)):
+    """Reset or update an administrator's password directly."""
+    clean_email = data.email.strip().lower()
+    admin = db.query(Admin).filter(func.lower(func.trim(Admin.email)) == clean_email).first()
+    if not admin:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No administrator found with this email.",
+        )
+    admin.password_hash = hash_password(data.password.strip())
+    db.commit()
+    return {"message": "Admin password updated successfully. You can now sign in."}
 
 
 @router.get("/me", response_model=UserProfileResponse)

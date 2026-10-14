@@ -8,12 +8,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.core.deps import get_db, require_company_user
+from app.core.deps import get_db, get_current_user, require_company_user
 from app.models.delivery import Delivery
 from app.models.job import Job
 from app.models.audit_log import AuditLog
 from app.models.truck import Truck
 from app.schemas.delivery import DeliveryCreate, DeliveryUpdate, DeliveryResponse, PODSubmit
+from app.services.access import get_job_or_404
 
 router = APIRouter(prefix="/deliveries", tags=["Deliveries"])
 
@@ -21,18 +22,21 @@ router = APIRouter(prefix="/deliveries", tags=["Deliveries"])
 @router.get("/job/{job_id}", response_model=List[DeliveryResponse])
 def list_deliveries_for_job(
     job_id: str,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """List all delivery stops for a job."""
+    """List all delivery stops for a job. Auto-creates primary stop if not present."""
     job = (
         db.query(Job)
         .filter(Job.id == job_id)
         .first()
     )
-    truck_owned = job and job.truck_id and db.query(Truck).filter(Truck.id == job.truck_id, Truck.company_id == current_user["company_id"]).first()
-    if not job or (job.company_id != current_user["company_id"] and not truck_owned):
+    if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+
+    # Ownership check
+    if current_user.get("user_type") == "company" and job.company_id != current_user.get("company_id"):
+        raise HTTPException(status_code=403, detail="Access denied")
 
     deliveries = (
         db.query(Delivery)
@@ -40,6 +44,27 @@ def list_deliveries_for_job(
         .order_by(Delivery.stop_order)
         .all()
     )
+
+    # Auto-populate primary delivery stop from job if none exists
+    if not deliveries:
+        recipient = (getattr(job.company, "name", None) if job.company else None) or "Consignee / Receiver"
+        address = job.delivery_location or "Destination Delivery Point"
+        delivery_status = "delivered" if job.status == "delivered" else ("in_transit" if job.status in ("in_transit", "out_for_delivery") else "pending")
+        
+        default_delivery = Delivery(
+            job_id=job.id,
+            stop_order=1,
+            recipient_name=recipient,
+            address=address,
+            status=delivery_status,
+            delivered_at=datetime.now(timezone.utc) if job.status == "delivered" else None,
+            notes=f"Delivery point for {job.job_name}"
+        )
+        db.add(default_delivery)
+        db.commit()
+        db.refresh(default_delivery)
+        deliveries = [default_delivery]
+
     return deliveries
 
 
@@ -98,7 +123,7 @@ def update_delivery(
 def submit_proof_of_delivery(
     delivery_id: str,
     data: PODSubmit,
-    current_user: dict = Depends(require_company_user),
+    current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Submit proof of delivery (signature, photo, GPS, notes)."""
@@ -106,9 +131,8 @@ def submit_proof_of_delivery(
     if not delivery:
         raise HTTPException(status_code=404, detail="Delivery not found")
     job = db.query(Job).filter(Job.id == delivery.job_id).first()
-    truck_owned = job and job.truck_id and db.query(Truck).filter(Truck.id == job.truck_id, Truck.company_id == current_user["company_id"]).first()
-    if not job or (job.company_id != current_user["company_id"] and not truck_owned):
-        raise HTTPException(status_code=403, detail="Access denied")
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
 
     # Update POD fields
     if data.signature_url:

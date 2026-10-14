@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1900" width="1400" height="1900">
+  <defs>
+    <style>
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 24px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; fill: #000000; text-anchor: middle; }
+      .swimlane-header { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #FFFFFF; text-anchor: middle; }
+      .act-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 12px; font-weight: 600; fill: #000000; text-anchor: middle; }
+      .guard-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #000000; }
+      .action-node { fill: #FFFFFF; stroke: #000000; stroke-width: 1.8; rx: 14; ry: 14; }
+      .decision-node { fill: #FFFFFF; stroke: #000000; stroke-width: 1.8; }
+      .flow-line { stroke: #000000; stroke-width: 1.6; fill: none; }
+      .fork-join { fill: #000000; stroke: #000000; }
+    </style>
+    <marker id="flow-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#000000" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1400" height="1900" fill="#FFFFFF" />
+
+  <!-- Diagram Title -->
+  <text x="700" y="45" class="title">CARGOSYNC FREIGHT LIFECYCLE — ACTIVITY DIAGRAM</text>
+  <text x="700" y="70" class="subtitle">UML 2.5 Activity Model with Partitions (Swimlanes), Decisions &amp; 3D Engine Synchronization</text>
+
+  <!-- Swimlane Partitions -->
+  <!-- Header 1: Shipper -->
+  <rect x="60" y="100" width="410" height="40" fill="#000000" stroke="#000000" />
+  <text x="265" y="126" class="swimlane-header">SHIPPER (COMPANY)</text>
+  <rect x="60" y="140" width="410" height="1720" fill="none" stroke="#000000" stroke-width="1.5" />
+
+  <!-- Header 2: Trucker -->
+  <rect x="470" y="100" width="460" height="40" fill="#000000" stroke="#000000" />
+  <text x="700" y="126" class="swimlane-header">FLEET TRUCKER &amp; DRIVER</text>
+  <rect x="470" y="140" width="460" height="1720" fill="none" stroke="#000000" stroke-width="1.5" />
+
+  <!-- Header 3: System Engine -->
+  <rect x="930" y="100" width="410" height="40" fill="#000000" stroke="#000000" />
+  <text x="1135" y="126" class="swimlane-header">CARGOSYNC 3D &amp; AUDIT ENGINE</text>
+  <rect x="930" y="140" width="410" height="1720" fill="none" stroke="#000000" stroke-width="1.5" />
+
+  <!-- Initial Node in Shipper lane -->
+  <circle cx="265" cy="180" r="14" fill="#000000" stroke="#000000" />
+
+  <!-- Flow 1: Start -> Create Job -->
+  <line x1="265" y1="194" x2="265" y2="230" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Activity: Create Freight Job -->
+  <rect x="145" y="230" width="240" height="50" class="action-node" />
+  <text x="265" y="252" class="act-text">Create Freight Job</text>
+  <text x="265" y="268" class="act-text">(Origin, Destination, Schedule)</text>
+
+  <!-- Flow 2: -> Add Cargo Boxes -->
+  <line x1="265" y1="280" x2="265" y2="320" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Activity: Add Cargo Boxes -->
+  <rect x="145" y="320" width="240" height="50" class="action-node" />
+  <text x="265" y="342" class="act-text">Add Cargo Packages</text>
+  <text x="265" y="358" class="act-text">(L, W, H, Weight, Fragility, Stops)</text>
+
+  <!-- Flow 3: -> Publish to Marketplace -->
+  <line x1="265" y1="370" x2="265" y2="410" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Activity: Publish to Marketplace -->
+  <rect x="145" y="410" width="240" height="50" class="action-node" />
+  <text x="265" y="432" class="act-text">Publish Job to Marketplace</text>
+  <text x="265" y="448" class="act-text">(Status = "posted")</text>
+
+  <!-- Flow 4: Across to System for Marketplace index -->
+  <path d="M 385 435 L 1135 435 L 1135 470" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- System Activity: Broadcast & Audit -->
+  <rect x="1015" y="470" width="240" height="50" class="action-node" />
+  <text x="1135" y="492" class="act-text">Broadcast to Available Fleet</text>
+  <text x="1135" y="508" class="act-text">&amp; Log Immutable Audit Event</text>
+
+  <!-- Flow 5: Across to Trucker -->
+  <path d="M 1135 520 L 1135 560 L 700 560 L 700 580" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Trucker Activity: Browse & Accept -->
+  <rect x="580" y="580" width="240" height="50" class="action-node" />
+  <text x="700" y="602" class="act-text">Browse &amp; Accept Job</text>
+  <text x="700" y="618" class="act-text">(Assign Fleet Truck &amp; Driver)</text>
+
+  <!-- Flow 6: -> Decision: Consolidate More Cargo? -->
+  <line x1="700" y1="630" x2="700" y2="670" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Decision Diamond: Consolidate? -->
+  <polygon points="700,670 760,705 700,740 640,705" class="decision-node" />
+  <text x="700" y="709" class="act-text" style="font-size:10px">Consolidate?</text>
+
+  <!-- Branch [Yes]: Bundle candidate jobs -->
+  <line x1="760" y1="705" x2="880" y2="705" class="flow-line" marker-end="url(#flow-arrow)" />
+  <text x="770" y="695" class="guard-text">[Yes, More Space]</text>
+
+  <!-- Activity: Bundle Job to Truck Trip -->
+  <rect x="760" y="750" width="220" height="50" class="action-node" />
+  <text x="870" y="772" class="act-text">Combine Another Job</text>
+  <text x="870" y="788" class="act-text">to Existing Truck Trip</text>
+  <path d="M 880 705 L 880 750" class="flow-line" />
+
+  <!-- Flow back into 3D Bin Packing request -->
+  <path d="M 870 800 L 870 835 L 700 835" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Branch [No]: Direct Pack -->
+  <line x1="700" y1="740" x2="700" y2="860" class="flow-line" marker-end="url(#flow-arrow)" />
+  <text x="708" y="765" class="guard-text">[No, Direct Trip]</text>
+
+  <!-- Activity: Trigger 3D Bin Packing -->
+  <rect x="580" y="860" width="240" height="50" class="action-node" />
+  <text x="700" y="882" class="act-text">Request 3D Bin Packing</text>
+  <text x="700" y="898" class="act-text">(Truck Dimensions &amp; Cargo List)</text>
+
+  <!-- Flow to 3D Engine -->
+  <path d="M 820 885 L 1015 885" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- System Activity: Execute FFDH Bin Packing -->
+  <rect x="1015" y="860" width="240" height="60" class="action-node" />
+  <text x="1135" y="880" class="act-text">Execute 3D FFDH Packing</text>
+  <text x="1135" y="896" class="act-text">• Fixed Obstacles for Prior Cargo</text>
+  <text x="1135" y="910" class="act-text">• Reverse Stop Order &amp; Gravity</text>
+
+  <!-- Flow back to Trucker to Review 3D Plan -->
+  <path d="M 1135 920 L 1135 960 L 700 960 L 700 980" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Trucker Activity: Inspect 3D Visualizer -->
+  <rect x="580" y="980" width="240" height="50" class="action-node" />
+  <text x="700" y="1002" class="act-text">Inspect 3D Container Model</text>
+  <text x="700" y="1018" class="act-text">(Verify Stability, Weight &amp; Axle)</text>
+
+  <!-- Flow: Pre-departure Checklist -->
+  <line x1="700" y1="1030" x2="700" y2="1070" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Trucker Activity: Loading Checklist -->
+  <rect x="570" y="1070" width="260" height="50" class="action-node" />
+  <text x="700" y="1092" class="act-text">Perform Pre-Departure Checklist</text>
+  <text x="700" y="1108" class="act-text">(Verify Cargo Count, Seals &amp; Safety)</text>
+
+  <!-- Flow: -> Start Trip -->
+  <line x1="700" y1="1120" x2="700" y2="1160" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Trucker Activity: Start Trip -->
+  <rect x="580" y="1160" width="240" height="50" class="action-node" />
+  <text x="700" y="1182" class="act-text">Start Freight Trip</text>
+  <text x="700" y="1198" class="act-text">(Transition to In-Transit)</text>
+
+  <!-- Flow: Synchronization to System and Shipper -->
+  <!-- Fork Bar -->
+  <line x1="200" y1="1240" x2="1200" y2="1240" class="flow-line" style="stroke-width: 5;" />
+  <line x1="700" y1="1210" x2="700" y2="1240" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Fork Branch 1: System Audit Log -->
+  <line x1="1135" y1="1240" x2="1135" y2="1270" class="flow-line" marker-end="url(#flow-arrow)" />
+  <rect x="1015" y="1270" width="240" height="50" class="action-node" />
+  <text x="1135" y="1292" class="act-text">Record GPS Departure Stamp</text>
+  <text x="1135" y="1308" class="act-text">&amp; Update Consolidated Jobs</text>
+
+  <!-- Fork Branch 2: Shipper Tracking -->
+  <line x1="265" y1="1240" x2="265" y2="1270" class="flow-line" marker-end="url(#flow-arrow)" />
+  <rect x="145" y="1270" width="240" height="50" class="action-node" />
+  <text x="265" y="1292" class="act-text">Track Shipment In-Transit</text>
+  <text x="265" y="1308" class="act-text">(Status = "in_transit")</text>
+
+  <!-- Fork Branch 3: Trucker Drives to Destination -->
+  <line x1="700" y1="1240" x2="700" y2="1360" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Trucker Activity: Arrive & Unload -->
+  <rect x="570" y="1360" width="260" height="50" class="action-node" />
+  <text x="700" y="1382" class="act-text">Arrive at Destination</text>
+  <text x="700" y="1398" class="act-text">&amp; Perform Unloading Checklist</text>
+
+  <!-- Flow: Destination Verification Decision -->
+  <line x1="700" y1="1410" x2="700" y2="1450" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Decision: Cargo Intact? -->
+  <polygon points="700,1450 760,1485 700,1520 640,1485" class="decision-node" />
+  <text x="700" y="1489" class="act-text" style="font-size:10px">Intact?</text>
+
+  <!-- Branch [Damaged / Missing]: File Claim -->
+  <line x1="640" y1="1485" x2="430" y2="1485" class="flow-line" marker-end="url(#flow-arrow)" />
+  <text x="500" y="1475" class="guard-text">[Discrepancy]</text>
+
+  <rect x="145" y="1460" width="240" height="50" class="action-node" />
+  <text x="265" y="1482" class="act-text">Flag Damage &amp; File Claim</text>
+  <text x="265" y="1498" class="act-text">(Upload Evidence &amp; Notes)</text>
+
+  <!-- Branch [Verified / Intact]: Capture POD & End Trip -->
+  <line x1="700" y1="1520" x2="700" y2="1560" class="flow-line" marker-end="url(#flow-arrow)" />
+  <text x="708" y="1545" class="guard-text">[Verified 100%]</text>
+
+  <!-- Trucker Activity: End Trip & Signature -->
+  <rect x="570" y="1560" width="260" height="50" class="action-node" />
+  <text x="700" y="1582" class="act-text">Capture Consignee Signature</text>
+  <text x="700" y="1598" class="act-text">&amp; Complete End-Trip Handover</text>
+
+  <!-- Join flow to System Notification -->
+  <path d="M 830 1585 L 1015 1585" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- System Activity: Delivery Notification & Completion -->
+  <rect x="1015" y="1560" width="240" height="50" class="action-node" />
+  <text x="1135" y="1582" class="act-text">Mark Status = "delivered"</text>
+  <text x="1135" y="1598" class="act-text">&amp; Notify Shipper Instantly</text>
+
+  <!-- Flow to Shipper Final Delivery Confirmation -->
+  <path d="M 1135 1610 L 1135 1670 L 265 1670 L 265 1700" class="flow-line" marker-end="url(#flow-arrow)" />
+
+  <!-- Shipper Activity: Receive Notification & Rate -->
+  <rect x="145" y="1700" width="240" height="50" class="action-node" />
+  <text x="265" y="1722" class="act-text">Receive Delivery Notification</text>
+  <text x="265" y="1738" class="act-text">&amp; Rate Driver / Trucker</text>
+
+  <!-- Final Node -->
+  <line x1="265" y1="1750" x2="265" y2="1800" class="flow-line" marker-end="url(#flow-arrow)" />
+  <circle cx="265" cy="1820" r="14" fill="#FFFFFF" stroke="#000000" stroke-width="2" />
+  <circle cx="265" cy="1820" r="8" fill="#000000" />
+
+</svg>

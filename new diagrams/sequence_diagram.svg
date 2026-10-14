@@ -1,0 +1,326 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2000" width="1600" height="2000">
+  <defs>
+    <style>
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 24px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; fill: #000000; text-anchor: middle; }
+      .participant-box { fill: #FFFFFF; stroke: #000000; stroke-width: 1.8; rx: 4; ry: 4; }
+      .participant-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .participant-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10px; fill: #000000; text-anchor: middle; }
+      .lifeline { stroke: #000000; stroke-width: 1.2; stroke-dasharray: 6,4; fill: none; }
+      .activation { fill: #FFFFFF; stroke: #000000; stroke-width: 1.5; }
+      .msg-sync { stroke: #000000; stroke-width: 1.5; fill: none; }
+      .msg-reply { stroke: #000000; stroke-width: 1.5; stroke-dasharray: 5,4; fill: none; }
+      .msg-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 11px; font-weight: 600; fill: #000000; }
+      .step-num { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #000000; }
+      .phase-box { fill: none; stroke: #000000; stroke-width: 1; stroke-dasharray: 4,4; }
+      .phase-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #000000; font-style: italic; }
+    </style>
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#000000" />
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9" fill="none" stroke="#000000" stroke-width="1.5" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1600" height="2000" fill="#FFFFFF" />
+
+  <!-- Diagram Title -->
+  <text x="800" y="45" class="title">CARGOSYNC ORCHESTRATION — SEQUENCE DIAGRAM</text>
+  <text x="800" y="70" class="subtitle">End-to-End Execution Sequence: Job Creation, Consolidation, 3D Bin Packing, Verification &amp; Delivery</text>
+
+  <!-- ==================== PARTICIPANTS ==================== -->
+  <!-- X positions:
+       1. Shipper: 140
+       2. Web Frontend: 410
+       3. Backend API: 710
+       4. 3D Bin Engine: 990
+       5. Database: 1240
+       6. Fleet Trucker: 1460
+  -->
+
+  <!-- P1: Shipper -->
+  <g transform="translate(60, 95)">
+    <rect x="0" y="0" width="160" height="46" class="participant-box" />
+    <text x="80" y="20" class="participant-text">Shipper</text>
+    <text x="80" y="36" class="participant-sub">(Company Actor)</text>
+  </g>
+  <line x1="140" y1="141" x2="140" y2="1950" class="lifeline" />
+
+  <!-- P2: Frontend -->
+  <g transform="translate(330, 95)">
+    <rect x="0" y="0" width="160" height="46" class="participant-box" />
+    <text x="80" y="20" class="participant-text">Web Frontend</text>
+    <text x="80" y="36" class="participant-sub">(Next.js / React 19)</text>
+  </g>
+  <line x1="410" y1="141" x2="410" y2="1950" class="lifeline" />
+
+  <!-- P3: Backend API -->
+  <g transform="translate(630, 95)">
+    <rect x="0" y="0" width="160" height="46" class="participant-box" />
+    <text x="80" y="20" class="participant-text">Backend API</text>
+    <text x="80" y="36" class="participant-sub">(FastAPI / Python)</text>
+  </g>
+  <line x1="710" y1="141" x2="710" y2="1950" class="lifeline" />
+
+  <!-- P4: 3D Packing Engine -->
+  <g transform="translate(910, 95)">
+    <rect x="0" y="0" width="160" height="46" class="participant-box" />
+    <text x="80" y="20" class="participant-text">3D Packing Engine</text>
+    <text x="80" y="36" class="participant-sub">(FFDH Alg. Service)</text>
+  </g>
+  <line x1="990" y1="141" x2="990" y2="1950" class="lifeline" />
+
+  <!-- P5: Database -->
+  <g transform="translate(1160, 95)">
+    <rect x="0" y="0" width="160" height="46" class="participant-box" />
+    <text x="80" y="20" class="participant-text">Database</text>
+    <text x="80" y="36" class="participant-sub">(PostgreSQL / Supabase)</text>
+  </g>
+  <line x1="1240" y1="141" x2="1240" y2="1950" class="lifeline" />
+
+  <!-- P6: Trucker / Driver -->
+  <g transform="translate(1380, 95)">
+    <rect x="0" y="0" width="160" height="46" class="participant-box" />
+    <text x="80" y="20" class="participant-text">Fleet Trucker</text>
+    <text x="80" y="36" class="participant-sub">(Driver / Fleet Owner)</text>
+  </g>
+  <line x1="1460" y1="141" x2="1460" y2="1950" class="lifeline" />
+
+  <!-- ==================== PHASE 1: JOB CREATION & CARGO ENTRY ==================== -->
+  <rect x="50" y="160" width="1500" height="230" class="phase-box" />
+  <text x="70" y="180" class="phase-text">Phase 1: Freight Job Creation, Cargo Box Entry &amp; Marketplace Publishing</text>
+
+  <!-- Step 1: Shipper creates job -->
+  <line x1="140" y1="205" x2="410" y2="205" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="160" y="200" class="msg-label">1. Fill Job Form(name, origin, dest, date, window)</text>
+
+  <rect x="403" y="205" width="14" height="60" class="activation" />
+
+  <!-- Step 2: Frontend to API -->
+  <line x1="417" y1="225" x2="703" y2="225" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="440" y="220" class="msg-label">2. POST /api/v1/jobs/ {job_data}</text>
+
+  <rect x="703" y="225" width="14" height="45" class="activation" />
+
+  <!-- Step 3: Insert DB -->
+  <line x1="717" y1="240" x2="1233" y2="240" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="740" y="235" class="msg-label">3. INSERT INTO jobs (status="draft")</text>
+
+  <!-- Step 4: Add Cargo Boxes -->
+  <line x1="140" y1="290" x2="410" y2="290" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="160" y="285" class="msg-label">4. Add Boxes (L, W, H, Weight, Fragile, Stop)</text>
+
+  <rect x="403" y="290" width="14" height="85" class="activation" />
+
+  <line x1="417" y1="310" x2="703" y2="310" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="440" y="305" class="msg-label">5. POST /api/v1/boxes/ {box_payload}</text>
+
+  <rect x="703" y="310" width="14" height="65" class="activation" />
+
+  <line x1="717" y1="330" x2="1233" y2="330" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="740" y="325" class="msg-label">6. INSERT INTO boxes &amp; generate QR metadata</text>
+
+  <!-- Step 7: Publish to Marketplace -->
+  <line x1="140" y1="365" x2="410" y2="365" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="160" y="360" class="msg-label">7. Click "Publish to Marketplace"</text>
+
+  <line x1="417" y1="375" x2="703" y2="375" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="440" y="370" class="msg-label">8. POST /api/v1/jobs/{id}/publish</text>
+
+  <!-- ==================== PHASE 2: MARKETPLACE ACCEPTANCE & CONSOLIDATION ==================== -->
+  <rect x="50" y="410" width="1500" height="270" class="phase-box" />
+  <text x="70" y="430" class="phase-text">Phase 2: Trucker Marketplace Discovery, Job Acceptance &amp; Multi-Job Trip Consolidation</text>
+
+  <!-- Trucker browses marketplace -->
+  <line x1="1460" y1="460" x2="417" y2="460" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="960" y="455" class="msg-label">9. Browse Open Freight Marketplace</text>
+
+  <rect x="403" y="460" width="14" height="60" class="activation" />
+
+  <line x1="417" y1="480" x2="703" y2="480" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="475" class="msg-label">10. GET /api/v1/jobs/marketplace</text>
+
+  <rect x="703" y="480" width="14" height="40" class="activation" />
+
+  <!-- Trucker accepts job -->
+  <line x1="1460" y1="535" x2="417" y2="535" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="960" y="530" class="msg-label">11. Click "Accept Job" with assigned Truck (KL-32-M-3771)</text>
+
+  <rect x="403" y="535" width="14" height="60" class="activation" />
+
+  <line x1="417" y1="555" x2="703" y2="555" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="550" class="msg-label">12. POST /api/v1/jobs/{id}/accept {truck_id}</text>
+
+  <rect x="703" y="555" width="14" height="45" class="activation" />
+
+  <line x1="717" y1="575" x2="1233" y2="575" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="570" class="msg-label">13. UPDATE jobs SET status="accepted", truck_id</text>
+
+  <!-- Trucker combines another job -->
+  <line x1="1460" y1="620" x2="417" y2="620" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="860" y="615" class="msg-label">14. Click "Combine Another Job to this Truck Trip" (Fetch Candidates)</text>
+
+  <rect x="403" y="620" width="14" height="50" class="activation" />
+
+  <line x1="417" y1="640" x2="703" y2="640" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="440" y="635" class="msg-label">15. GET /api/v1/jobs/{id}/bundle-candidates</text>
+
+  <rect x="703" y="640" width="14" height="35" class="activation" />
+
+  <line x1="703" y1="660" x2="417" y2="660" class="msg-reply" marker-end="url(#arrow-open)" />
+  <text x="460" y="655" class="msg-label">16. Return candidate jobs with box counts</text>
+
+  <!-- ==================== PHASE 3: 3D BIN PACKING COMPUTATION ==================== -->
+  <rect x="50" y="700" width="1500" height="350" class="phase-box" />
+  <text x="70" y="720" class="phase-text">Phase 3: Multi-Job 3D Bin Packing Engine Computation (Collision-Free Spatial Layout)</text>
+
+  <!-- Trucker confirms bundle -->
+  <line x1="1460" y1="745" x2="417" y2="745" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="860" y="740" class="msg-label">17. Select Candidate Job &amp; Click "Combine Job &amp; Pack Cargo in 3D"</text>
+
+  <rect x="403" y="745" width="14" height="150" class="activation" />
+
+  <line x1="417" y1="765" x2="703" y2="765" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="760" class="msg-label">18. POST /api/v1/jobs/{id}/bundle-job {bundle_job_id}</text>
+
+  <rect x="703" y="765" width="14" height="125" class="activation" />
+
+  <!-- Backend queries truck & existing placed boxes -->
+  <line x1="717" y1="785" x2="1233" y2="785" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="780" class="msg-label">19. Fetch Truck Dimensions &amp; Existing Placed Boxes</text>
+
+  <!-- Call 3D Bin Packing Service -->
+  <line x1="717" y1="815" x2="983" y2="815" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="740" y="810" class="msg-label">20. pack_boxes_3d(truck_dims, new_boxes, existing_placements)</text>
+
+  <rect x="983" y="815" width="14" height="50" class="activation" />
+
+  <!-- Internal 3D Algorithm execution -->
+  <text x="1010" y="835" class="msg-label" style="font-size:10px; font-style:italic">• FFDH Volume Sort &amp; 6 Rotations</text>
+  <text x="1010" y="850" class="msg-label" style="font-size:10px; font-style:italic">• Boundary &amp; Non-Overlap with Obstacles</text>
+
+  <!-- Return packing placements -->
+  <line x1="983" y1="860" x2="717" y2="860" class="msg-reply" marker-end="url(#arrow-open)" />
+  <text x="740" y="855" class="msg-label">21. Placements (x, y, z, rotation) &amp; efficiency metrics</text>
+
+  <!-- Update DB with coordinates -->
+  <line x1="717" y1="880" x2="1233" y2="880" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="875" class="msg-label">22. UPDATE boxes (pack_x, pack_y, pack_z) &amp; job (packing_data)</text>
+
+  <!-- Return 3D result to frontend -->
+  <line x1="703" y1="895" x2="417" y2="895" class="msg-reply" marker-end="url(#arrow-open)" />
+  <text x="450" y="890" class="msg-label">23. Response: Combined Job added &amp; 3D coordinates ready</text>
+
+  <!-- Render Three.js -->
+  <line x1="410" y1="920" x2="1460" y2="920" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="700" y="915" class="msg-label">24. Render Three.js 3D Visualizer (Active cargo + bundled cargo in container)</text>
+
+  <line x1="1460" y1="950" x2="417" y2="950" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="800" y="945" class="msg-label">25. Download PDF Loading Sheet &amp; Cargo Labels</text>
+
+  <line x1="417" y1="975" x2="703" y2="975" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="970" class="msg-label">26. GET /api/v1/packing/loading-sheet/{id}</text>
+
+  <!-- ==================== PHASE 4: PRE-DEPARTURE CHECKLIST & TRIP START ==================== -->
+  <rect x="50" y="1070" width="1500" height="290" class="phase-box" />
+  <text x="70" y="1090" class="phase-text">Phase 4: Pre-Departure Loading Checklist &amp; Trip Start (In-Transit Transition)</text>
+
+  <!-- Trucker performs loading checklist -->
+  <line x1="1460" y1="1120" x2="417" y2="1120" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="800" y="1115" class="msg-label">27. Open "Loading Verification Checklist" &amp; verify physical boxes</text>
+
+  <rect x="403" y="1120" width="14" height="60" class="activation" />
+
+  <line x1="417" y1="1140" x2="703" y2="1140" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="1135" class="msg-label">28. POST /api/v1/checklist/approve/{id} {driver_name, checked_box_ids}</text>
+
+  <rect x="703" y="1140" width="14" height="40" class="activation" />
+
+  <line x1="717" y1="1160" x2="1233" y2="1160" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="1155" class="msg-label">29. INSERT INTO audit_logs (action="checklist_approved") &amp; status="loading"</text>
+
+  <!-- Trucker clicks Start Trip -->
+  <line x1="1460" y1="1200" x2="417" y2="1200" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="800" y="1195" class="msg-label">30. Click "🚀 Start Trip &amp; Depart"</text>
+
+  <rect x="403" y="1200" width="14" height="70" class="activation" />
+
+  <line x1="417" y1="1225" x2="703" y2="1225" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="1220" class="msg-label">31. POST /api/v1/jobs/{id}/start-trip</text>
+
+  <rect x="703" y="1225" width="14" height="50" class="activation" />
+
+  <!-- Update status of all consolidated jobs on this truck -->
+  <line x1="717" y1="1245" x2="1233" y2="1245" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="1240" class="msg-label">32. UPDATE jobs SET status="in_transit" for all jobs on this truck</text>
+
+  <!-- Broadcast status to Shipper -->
+  <line x1="703" y1="1265" x2="140" y2="1265" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="250" y="1260" class="msg-label">33. Notify Shipper: Fleet Truck has departed with cargo</text>
+
+  <!-- ==================== PHASE 5: DESTINATION UNLOADING & PROOF OF DELIVERY ==================== -->
+  <rect x="50" y="1380" width="1500" height="340" class="phase-box" />
+  <text x="70" y="1400" class="phase-text">Phase 5: Destination Arrival, Consignee Verification Checklist &amp; Proof of Delivery (POD)</text>
+
+  <!-- Trucker arrives and clicks End Trip -->
+  <line x1="1460" y1="1430" x2="417" y2="1430" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="800" y="1425" class="msg-label">34. Trucker arrives at destination &amp; clicks "🏁 End Trip / Mark Delivered"</text>
+
+  <rect x="403" y="1430" width="14" height="60" class="activation" />
+
+  <!-- Modal opens for Delivery Checklist -->
+  <line x1="410" y1="1455" x2="1460" y2="1455" class="msg-reply" marker-end="url(#arrow-open)" />
+  <text x="750" y="1450" class="msg-label">35. Display Delivery Unloading Checklist &amp; POD Handover Modal</text>
+
+  <!-- Trucker submits verified delivery -->
+  <line x1="1460" y1="1495" x2="417" y2="1495" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="1490" class="msg-label">36. Submit Checklist (verified boxes, recipient_name, notes, signature)</text>
+
+  <rect x="403" y="1495" width="14" height="90" class="activation" />
+
+  <line x1="417" y1="1520" x2="703" y2="1520" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="1515" class="msg-label">37. POST /api/v1/jobs/{id}/end-trip {recipient_name, notes, verified_box_ids}</text>
+
+  <rect x="703" y="1520" width="14" height="70" class="activation" />
+
+  <!-- Backend updates deliveries and audit log -->
+  <line x1="717" y1="1540" x2="1233" y2="1540" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="1535" class="msg-label">38. UPDATE jobs SET status="delivered", INSERT INTO deliveries (POD)</text>
+
+  <!-- Backend creates Company delivery notification audit log -->
+  <line x1="717" y1="1565" x2="1233" y2="1565" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="1560" class="msg-label">39. INSERT INTO audit_logs (action="company_notification", details="🔔 Delivered")</text>
+
+  <!-- Real-time notification to Shipper -->
+  <line x1="703" y1="1590" x2="140" y2="1590" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="220" y="1585" class="msg-label">40. 🔔 Dispatched Notification to Shipper: Cargo verified &amp; delivered</text>
+
+  <!-- Shipper Rates Driver -->
+  <line x1="140" y1="1640" x2="410" y2="1640" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="160" y="1635" class="msg-label">41. View Delivery Proof &amp; Submit Star Rating</text>
+
+  <line x1="417" y1="1660" x2="703" y2="1660" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="1655" class="msg-label">42. POST /api/v1/jobs/{id}/rate-driver {rating, feedback}</text>
+
+  <!-- ==================== PHASE 6: AUDIT TRAIL & CLAIMS GOVERNANCE ==================== -->
+  <rect x="50" y="1740" width="1500" height="180" class="phase-box" />
+  <text x="70" y="1760" class="phase-text">Phase 6: Immutable Chain of Custody Audit Log &amp; Claims Resolution</text>
+
+  <!-- Shipper or Admin views audit log -->
+  <line x1="140" y1="1800" x2="410" y2="1800" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="160" y="1795" class="msg-label">43. Request Full Chain of Custody Audit Trail</text>
+
+  <line x1="417" y1="1820" x2="703" y2="1820" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="450" y="1815" class="msg-label">44. GET /api/v1/audit/job/{id}</text>
+
+  <rect x="703" y="1820" width="14" height="40" class="activation" />
+
+  <line x1="717" y1="1835" x2="1233" y2="1835" class="msg-sync" marker-end="url(#arrow-solid)" />
+  <text x="750" y="1830" class="msg-label">45. SELECT * FROM audit_logs WHERE job_id ORDER BY timestamp</text>
+
+  <line x1="703" y1="1855" x2="140" y2="1855" class="msg-reply" marker-end="url(#arrow-open)" />
+  <text x="220" y="1850" class="msg-label">46. Return chronological events (GPS timestamps, driver signatures, checklist verifications)</text>
+
+</svg>

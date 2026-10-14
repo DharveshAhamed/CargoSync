@@ -1,0 +1,285 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 1300" width="1700" height="1300">
+  <defs>
+    <style>
+      .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 24px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; fill: #000000; text-anchor: middle; }
+      .tbl-header { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #FFFFFF; }
+      .col-pk { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #000000; }
+      .col-fk { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #000000; font-style: italic; }
+      .col-name { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 11px; fill: #000000; }
+      .col-type { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10px; fill: #000000; text-anchor: end; }
+      .card-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 10px; font-weight: bold; fill: #000000; }
+      .table-box { fill: #FFFFFF; stroke: #000000; stroke-width: 1.6; }
+      .header-box { fill: #000000; stroke: #000000; stroke-width: 1.6; }
+      .divider { stroke: #000000; stroke-width: 1; }
+      .rel-line { stroke: #000000; stroke-width: 1.6; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1700" height="1300" fill="#FFFFFF" />
+
+  <!-- Diagram Title -->
+  <text x="850" y="40" class="title">CARGOSYNC DATABASE RELATIONAL SCHEMA (ER DIAGRAM)</text>
+  <text x="850" y="65" class="subtitle">PostgreSQL Relational Entities • Primary Keys (PK), Foreign Keys (FK) &amp; Cardinality (1:N)</text>
+
+  <!-- ==================== ENTITY 1: COMPANIES (Central Organization) ==================== -->
+  <g transform="translate(640, 100)">
+    <rect x="0" y="0" width="260" height="230" class="table-box" />
+    <rect x="0" y="0" width="260" height="28" class="header-box" />
+    <text x="130" y="19" class="tbl-header" text-anchor="middle">COMPANIES</text>
+
+    <!-- Attributes -->
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="250" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="260" y2="56" class="divider" />
+    <text x="10" y="74" class="col-name">name</text><text x="250" y="74" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="94" class="col-name">email</text><text x="250" y="94" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="114" class="col-name">phone</text><text x="250" y="114" class="col-type">VARCHAR(50)</text>
+    <text x="10" y="134" class="col-name">address</text><text x="250" y="134" class="col-type">TEXT</text>
+    <text x="10" y="154" class="col-name">logo_url</text><text x="250" y="154" class="col-type">TEXT</text>
+    <text x="10" y="174" class="col-name">account_type</text><text x="250" y="174" class="col-type">VARCHAR(30)</text>
+    <text x="10" y="194" class="col-name">created_at</text><text x="250" y="194" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 2: USERS (Team Members) ==================== -->
+  <g transform="translate(260, 100)">
+    <rect x="0" y="0" width="250" height="230" class="table-box" />
+    <rect x="0" y="0" width="250" height="28" class="header-box" />
+    <text x="125" y="19" class="tbl-header" text-anchor="middle">USERS</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="240" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="250" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  company_id</text><text x="240" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-name">email</text><text x="240" y="94" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="114" class="col-name">password_hash</text><text x="240" y="114" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="134" class="col-name">name</text><text x="240" y="134" class="col-type">VARCHAR(100)</text>
+    <text x="10" y="154" class="col-name">phone</text><text x="240" y="154" class="col-type">VARCHAR(50)</text>
+    <text x="10" y="174" class="col-name">role</text><text x="240" y="174" class="col-type">VARCHAR(20)</text>
+    <text x="10" y="194" class="col-name">created_at</text><text x="240" y="194" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 3: ADMINS ==================== -->
+  <g transform="translate(40, 100)">
+    <rect x="0" y="0" width="180" height="150" class="table-box" />
+    <rect x="0" y="0" width="180" height="28" class="header-box" />
+    <text x="90" y="19" class="tbl-header" text-anchor="middle">ADMINS</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="170" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="180" y2="56" class="divider" />
+    <text x="10" y="74" class="col-name">email</text><text x="170" y="74" class="col-type">VARCHAR</text>
+    <text x="10" y="94" class="col-name">full_name</text><text x="170" y="94" class="col-type">VARCHAR</text>
+    <text x="10" y="114" class="col-name">is_superadmin</text><text x="170" y="114" class="col-type">BOOLEAN</text>
+    <text x="10" y="134" class="col-name">created_at</text><text x="170" y="134" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 4: TRUCKS (Fleet Assets) ==================== -->
+  <g transform="translate(1040, 100)">
+    <rect x="0" y="0" width="260" height="230" class="table-box" />
+    <rect x="0" y="0" width="260" height="28" class="header-box" />
+    <text x="130" y="19" class="tbl-header" text-anchor="middle">TRUCKS</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="250" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="260" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  company_id</text><text x="250" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-name">truck_name</text><text x="250" y="94" class="col-type">VARCHAR(100)</text>
+    <text x="10" y="114" class="col-name">plate_number</text><text x="250" y="114" class="col-type">VARCHAR(30)</text>
+    <text x="10" y="134" class="col-name">length_cm, width_cm</text><text x="250" y="134" class="col-type">NUMERIC</text>
+    <text x="10" y="154" class="col-name">height_cm, max_wt</text><text x="250" y="154" class="col-type">NUMERIC</text>
+    <text x="10" y="174" class="col-name">is_active</text><text x="250" y="174" class="col-type">BOOLEAN</text>
+    <text x="10" y="194" class="col-name">created_at</text><text x="250" y="194" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 5: DRIVERS ==================== -->
+  <g transform="translate(1390, 100)">
+    <rect x="0" y="0" width="250" height="210" class="table-box" />
+    <rect x="0" y="0" width="250" height="28" class="header-box" />
+    <text x="125" y="19" class="tbl-header" text-anchor="middle">DRIVERS</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="240" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="250" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  company_id</text><text x="240" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-fk">FK  truck_id</text><text x="240" y="94" class="col-type">UUID</text>
+    <text x="10" y="114" class="col-name">full_name</text><text x="240" y="114" class="col-type">VARCHAR(100)</text>
+    <text x="10" y="134" class="col-name">phone</text><text x="240" y="134" class="col-type">VARCHAR(50)</text>
+    <text x="10" y="154" class="col-name">license_number</text><text x="240" y="154" class="col-type">VARCHAR(50)</text>
+    <text x="10" y="174" class="col-name">is_active</text><text x="240" y="174" class="col-type">BOOLEAN</text>
+  </g>
+
+  <!-- ==================== ENTITY 6: JOBS (Shipment Header) ==================== -->
+  <g transform="translate(640, 440)">
+    <rect x="0" y="0" width="280" height="300" class="table-box" />
+    <rect x="0" y="0" width="280" height="28" class="header-box" />
+    <text x="140" y="19" class="tbl-header" text-anchor="middle">JOBS (FREIGHT SHIPMENTS)</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="270" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="280" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  company_id</text><text x="270" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-fk">FK  truck_id</text><text x="270" y="94" class="col-type">UUID (Nullable)</text>
+    <text x="10" y="114" class="col-name">job_name</text><text x="270" y="114" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="134" class="col-name">status</text><text x="270" y="134" class="col-type">VARCHAR(30)</text>
+    <text x="10" y="154" class="col-name">pickup_location</text><text x="270" y="154" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="174" class="col-name">delivery_location</text><text x="270" y="174" class="col-type">VARCHAR(255)</text>
+    <text x="10" y="194" class="col-name">pickup_lat, pickup_lng</text><text x="270" y="194" class="col-type">NUMERIC</text>
+    <text x="10" y="214" class="col-name">delivery_lat, lng</text><text x="270" y="214" class="col-type">NUMERIC</text>
+    <text x="10" y="234" class="col-name">date, time_window</text><text x="270" y="234" class="col-type">DATE / VARCHAR</text>
+    <text x="10" y="254" class="col-name">packing_data</text><text x="270" y="254" class="col-type">JSONB</text>
+    <text x="10" y="274" class="col-name">created_at, updated_at</text><text x="270" y="274" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 7: BOXES (Cargo Items) ==================== -->
+  <g transform="translate(230, 460)">
+    <rect x="0" y="0" width="280" height="280" class="table-box" />
+    <rect x="0" y="0" width="280" height="28" class="header-box" />
+    <text x="140" y="19" class="tbl-header" text-anchor="middle">BOXES (CARGO PACKAGES)</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="270" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="280" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  job_id</text><text x="270" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-name">label_reference</text><text x="270" y="94" class="col-type">VARCHAR(100)</text>
+    <text x="10" y="114" class="col-name">length_cm, width_cm</text><text x="270" y="114" class="col-type">NUMERIC(8,2)</text>
+    <text x="10" y="134" class="col-name">height_cm, weight_kg</text><text x="270" y="134" class="col-type">NUMERIC(8,2)</text>
+    <text x="10" y="154" class="col-name">fragile</text><text x="270" y="154" class="col-type">BOOLEAN</text>
+    <text x="10" y="174" class="col-name">stop_order</text><text x="270" y="174" class="col-type">INTEGER</text>
+    <text x="10" y="194" class="col-name">qr_code_url</text><text x="270" y="194" class="col-type">TEXT</text>
+    <text x="10" y="214" class="col-name">pack_x, pack_y, pack_z</text><text x="270" y="214" class="col-type">NUMERIC(8,2)</text>
+    <text x="10" y="234" class="col-name">pack_rotation</text><text x="270" y="234" class="col-type">INTEGER</text>
+  </g>
+
+  <!-- ==================== ENTITY 8: DELIVERIES (Multi-Stop & POD) ==================== -->
+  <g transform="translate(1050, 470)">
+    <rect x="0" y="0" width="270" height="250" class="table-box" />
+    <rect x="0" y="0" width="270" height="28" class="header-box" />
+    <text x="135" y="19" class="tbl-header" text-anchor="middle">DELIVERIES (STOPS &amp; POD)</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="260" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="270" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  job_id</text><text x="260" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-name">stop_order</text><text x="260" y="94" class="col-type">INTEGER</text>
+    <text x="10" y="114" class="col-name">recipient_name</text><text x="260" y="114" class="col-type">VARCHAR(100)</text>
+    <text x="10" y="134" class="col-name">address</text><text x="260" y="134" class="col-type">TEXT</text>
+    <text x="10" y="154" class="col-name">status</text><text x="260" y="154" class="col-type">VARCHAR(20)</text>
+    <text x="10" y="174" class="col-name">signature_data</text><text x="260" y="174" class="col-type">TEXT</text>
+    <text x="10" y="194" class="col-name">proof_photo_url</text><text x="260" y="194" class="col-type">TEXT</text>
+    <text x="10" y="214" class="col-name">delivered_at</text><text x="260" y="214" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 9: AUDIT_LOGS (Chain of Custody) ==================== -->
+  <g transform="translate(300, 890)">
+    <rect x="0" y="0" width="260" height="210" class="table-box" />
+    <rect x="0" y="0" width="260" height="28" class="header-box" />
+    <text x="130" y="19" class="tbl-header" text-anchor="middle">AUDIT_LOGS (CUSTODY)</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="250" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="260" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  job_id</text><text x="250" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-fk">FK  user_id</text><text x="250" y="94" class="col-type">UUID (Nullable)</text>
+    <text x="10" y="114" class="col-name">action</text><text x="250" y="114" class="col-type">VARCHAR(50)</text>
+    <text x="10" y="134" class="col-name">details</text><text x="250" y="134" class="col-type">TEXT</text>
+    <text x="10" y="154" class="col-name">gps_lat, gps_lng</text><text x="250" y="154" class="col-type">NUMERIC</text>
+    <text x="10" y="174" class="col-name">timestamp</text><text x="250" y="174" class="col-type">TIMESTAMPTZ</text>
+  </g>
+
+  <!-- ==================== ENTITY 10: CLAIMS ==================== -->
+  <g transform="translate(680, 890)">
+    <rect x="0" y="0" width="260" height="210" class="table-box" />
+    <rect x="0" y="0" width="260" height="28" class="header-box" />
+    <text x="130" y="19" class="tbl-header" text-anchor="middle">CLAIMS (CARGO DAMAGE)</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="250" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="260" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  job_id</text><text x="250" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-fk">FK  box_id</text><text x="250" y="94" class="col-type">UUID (Nullable)</text>
+    <text x="10" y="114" class="col-fk">FK  user_id</text><text x="250" y="114" class="col-type">UUID</text>
+    <text x="10" y="134" class="col-name">claim_type</text><text x="250" y="134" class="col-type">VARCHAR(50)</text>
+    <text x="10" y="154" class="col-name">status</text><text x="250" y="154" class="col-type">VARCHAR(20)</text>
+    <text x="10" y="174" class="col-name">description</text><text x="250" y="174" class="col-type">TEXT</text>
+  </g>
+
+  <!-- ==================== ENTITY 11: JOB_REQUESTS ==================== -->
+  <g transform="translate(1070, 890)">
+    <rect x="0" y="0" width="250" height="190" class="table-box" />
+    <rect x="0" y="0" width="250" height="28" class="header-box" />
+    <text x="125" y="19" class="tbl-header" text-anchor="middle">JOB_REQUESTS</text>
+
+    <text x="10" y="48" class="col-pk">PK  id</text><text x="240" y="48" class="col-type">UUID</text>
+    <line x1="0" y1="56" x2="250" y2="56" class="divider" />
+    <text x="10" y="74" class="col-fk">FK  job_id</text><text x="240" y="74" class="col-type">UUID</text>
+    <text x="10" y="94" class="col-fk">FK  truck_id</text><text x="240" y="94" class="col-type">UUID</text>
+    <text x="10" y="114" class="col-fk">FK  company_id</text><text x="240" y="114" class="col-type">UUID</text>
+    <text x="10" y="134" class="col-name">status</text><text x="240" y="134" class="col-type">VARCHAR(20)</text>
+    <text x="10" y="154" class="col-name">message</text><text x="240" y="154" class="col-type">TEXT</text>
+  </g>
+
+  <!-- ==================== RELATIONSHIPS & CARDINALITY LINES ==================== -->
+
+  <!-- 1. COMPANIES (1) -> USERS (N) -->
+  <line x1="640" y1="180" x2="510" y2="180" class="rel-line" />
+  <text x="615" y="172" class="card-label">1</text>
+  <text x="525" y="172" class="card-label">N</text>
+
+  <!-- 2. COMPANIES (1) -> TRUCKS (N) -->
+  <line x1="900" y1="180" x2="1040" y2="180" class="rel-line" />
+  <text x="915" y="172" class="card-label">1</text>
+  <text x="1020" y="172" class="card-label">N</text>
+
+  <!-- 3. TRUCKS (1) -> DRIVERS (N) -->
+  <line x1="1300" y1="180" x2="1390" y2="180" class="rel-line" />
+  <text x="1310" y="172" class="card-label">1</text>
+  <text x="1370" y="172" class="card-label">N</text>
+
+  <!-- 4. COMPANIES (1) -> JOBS (N) -->
+  <line x1="770" y1="330" x2="770" y2="440" class="rel-line" />
+  <text x="778" y="350" class="card-label">1</text>
+  <text x="778" y="425" class="card-label">N</text>
+
+  <!-- 5. TRUCKS (1) -> JOBS (N) (Consolidated / Bundled jobs on same truck) -->
+  <path d="M 1150 330 L 1150 400 L 920 500" class="rel-line" />
+  <text x="1158" y="350" class="card-label">1</text>
+  <text x="935" y="495" class="card-label">0..N (Consolidated)</text>
+
+  <!-- 6. JOBS (1) -> BOXES (N) -->
+  <line x1="640" y1="580" x2="510" y2="580" class="rel-line" />
+  <text x="620" y="572" class="card-label">1</text>
+  <text x="525" y="572" class="card-label">1..N</text>
+
+  <!-- 7. JOBS (1) -> DELIVERIES (N) -->
+  <line x1="920" y1="580" x2="1050" y2="580" class="rel-line" />
+  <text x="935" y="572" class="card-label">1</text>
+  <text x="1030" y="572" class="card-label">1..N</text>
+
+  <!-- 8. JOBS (1) -> AUDIT_LOGS (N) -->
+  <path d="M 700 740 L 700 820 L 430 820 L 430 890" class="rel-line" />
+  <text x="708" y="760" class="card-label">1</text>
+  <text x="438" y="875" class="card-label">N</text>
+
+  <!-- 9. JOBS (1) -> CLAIMS (N) -->
+  <line x1="810" y1="740" x2="810" y2="890" class="rel-line" />
+  <text x="818" y="760" class="card-label">1</text>
+  <text x="818" y="875" class="card-label">0..N</text>
+
+  <!-- 10. JOBS (1) -> JOB_REQUESTS (N) -->
+  <path d="M 880 740 L 880 820 L 1180 820 L 1180 890" class="rel-line" />
+  <text x="888" y="760" class="card-label">1</text>
+  <text x="1188" y="875" class="card-label">0..N</text>
+
+  <!-- Crow's foot indicators (UML Crow's foot markers) -->
+  <!-- On BOXES side -->
+  <path d="M 525 573 L 510 580 L 525 587" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On USERS side -->
+  <path d="M 525 173 L 510 180 L 525 187" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On TRUCKS side -->
+  <path d="M 1025 173 L 1040 180 L 1025 187" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On DRIVERS side -->
+  <path d="M 1375 173 L 1390 180 L 1375 187" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On JOBS side from COMPANY -->
+  <path d="M 763 425 L 770 440 L 777 425" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On DELIVERIES side -->
+  <path d="M 1035 573 L 1050 580 L 1035 587" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On AUDIT_LOGS side -->
+  <path d="M 423 875 L 430 890 L 437 875" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On CLAIMS side -->
+  <path d="M 803 875 L 810 890 L 817 875" fill="none" stroke="#000000" stroke-width="1.6" />
+  <!-- On JOB_REQUESTS side -->
+  <path d="M 1173 875 L 1180 890 L 1187 875" fill="none" stroke="#000000" stroke-width="1.6" />
+
+</svg>

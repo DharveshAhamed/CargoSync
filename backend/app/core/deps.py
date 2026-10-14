@@ -13,13 +13,14 @@ from app.core.security import decode_token
 
 settings = get_settings()
 
-# Database engine — uses psycopg3 driver for Supabase, SQLite for local dev
+from sqlalchemy.pool import NullPool
+
+# Database engine — uses psycopg3 driver with NullPool for Supabase pooler
 if settings.DATABASE_URL and "your-password-here" not in settings.DATABASE_URL:
     engine = create_engine(
         settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://"),
-        pool_pre_ping=True,
-        pool_size=10,
-        max_overflow=20,
+        poolclass=NullPool,
+        connect_args={"connect_timeout": 10},
     )
 else:
     # Fallback to SQLite for local development without Supabase
@@ -44,6 +45,9 @@ def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()
 

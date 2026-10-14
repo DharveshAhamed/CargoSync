@@ -1,0 +1,123 @@
+Table Name,Column Name,Data Type,Nullable,Constraint / Key,Default Value,Description
+companies,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the organization entity
+companies,name,VARCHAR(255),NO,None,-,Registered legal business or corporate company name
+companies,email,VARCHAR(255),NO,UNIQUE,-,Primary corporate contact and administration email address
+companies,phone,VARCHAR(50),YES,None,NULL,Business telephone contact number
+companies,address,TEXT,YES,None,NULL,Registered physical headquarters or corporate office address
+companies,logo_url,TEXT,YES,None,NULL,Cloud storage URL pointing to company branding asset/logo
+companies,account_type,VARCHAR(30),NO,None,'company',Account categorization: 'company' (shipper) or 'trucker' (carrier)
+companies,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when the company profile was registered
+users,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique identifier for the user account
+users,company_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking user to their parent company
+users,name,VARCHAR(255),NO,None,-,Full personal name of the account holder
+users,email,VARCHAR(255),NO,UNIQUE,-,Official login email address and communication channel
+users,password_hash,VARCHAR(255),NO,None,-,Bcrypt/Argon2 one-way cryptographically hashed password
+users,phone,VARCHAR(50),YES,None,NULL,Direct mobile contact number
+users,location,TEXT,YES,None,NULL,"Designated dispatch location, branch, or home depot"
+users,role,VARCHAR(50),NO,None,'user',"Access control role: 'user', 'manager', or 'driver'"
+users,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when user registration occurred
+admins,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for administrative personnel
+admins,name,VARCHAR(255),NO,None,-,Full name of the system administrator
+admins,email,VARCHAR(255),NO,UNIQUE,-,Administrative login email address
+admins,password_hash,VARCHAR(255),NO,None,-,Secure cryptographic password hash
+admins,role,VARCHAR(50),NO,None,'super_admin',Governance tier: 'super_admin' or 'support'
+admins,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp of administrator provisioning
+drivers,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique identifier for the commercial driver record
+drivers,company_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking driver to the employing trucking company
+drivers,name,VARCHAR(255),NO,None,-,Full legal name of the licensed commercial driver
+drivers,email,VARCHAR(255),YES,None,NULL,Driver personal or dispatch email address
+drivers,phone,VARCHAR(50),YES,None,NULL,Driver mobile phone number for transit communication
+drivers,license_number,VARCHAR(100),YES,None,NULL,Commercial Driver's License (CDL) registration identifier
+drivers,license_expiry,TIMESTAMPTZ,YES,None,NULL,Official expiration date of the commercial license
+drivers,notes,TEXT,YES,None,NULL,"Medical certifications, endorsements, or driving notes"
+drivers,is_active,BOOLEAN,NO,None,TRUE,Status flag indicating driver operational availability
+drivers,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when the driver profile was created
+trucks,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the fleet vehicle
+trucks,company_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking vehicle to the owning transport firm
+trucks,driver_id,VARCHAR(36),YES,FOREIGN KEY,NULL,Foreign key linking vehicle to the assigned primary driver
+trucks,truck_name,VARCHAR(255),NO,None,-,"Vehicle fleet designation (e.g., 'Freightliner Cascadia #12')"
+trucks,plate_number,VARCHAR(50),NO,UNIQUE,-,Government-registered license plate alphanumeric number
+trucks,length_cm,FLOAT,NO,None,-,Internal cargo bay usable container length (centimeters)
+trucks,width_cm,FLOAT,NO,None,-,Internal cargo bay usable container width (centimeters)
+trucks,height_cm,FLOAT,NO,None,-,Internal cargo bay usable container height (centimeters)
+trucks,max_weight_kg,FLOAT,NO,None,-,Maximum gross payload carrying capacity (kilograms)
+trucks,driver_name,VARCHAR(255),YES,None,NULL,Legacy fallback driver name record
+trucks,availability_schedule,TEXT,YES,None,NULL,JSON serialized operating calendar and time slots
+trucks,is_active,BOOLEAN,NO,None,TRUE,Fleet operational readiness status flag
+trucks,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when vehicle was added to inventory
+jobs,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the freight job
+jobs,company_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking shipment to the originating shipper
+jobs,truck_id,VARCHAR(36),YES,FOREIGN KEY,NULL,Foreign key linking job to the assigned transport vehicle
+jobs,job_name,VARCHAR(255),NO,None,-,"Descriptive job title (e.g., 'Perishable Produce Dispatch - NYC to BOS')"
+jobs,date,DATE,NO,None,-,Scheduled date for cargo pickup and transit initiation
+jobs,time_window,VARCHAR(100),YES,None,NULL,Permissible pickup/delivery time range (e.g. '09:00-17:00')
+jobs,description,TEXT,YES,None,NULL,Detailed cargo profile and handling requirements
+jobs,pickup_location,TEXT,YES,None,NULL,"Full origin facility address, dock number, and city"
+jobs,delivery_location,TEXT,YES,None,NULL,Final destination facility address or distribution hub
+jobs,status,VARCHAR(50),NO,None,'draft',"State lifecycle: 'draft', 'posted', 'matched', 'accepted', 'loading', 'in_transit', 'out_for_delivery', 'delivered'"
+jobs,packing_data,TEXT,YES,None,NULL,JSON payload containing 3D bin packing coordinates and box rotations
+jobs,rating,INTEGER,YES,CHECK (1-5),NULL,Customer satisfaction star rating score (1 to 5)
+jobs,feedback,TEXT,YES,None,NULL,Post-trip review commentary from the shipper
+jobs,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when shipment order was initiated
+boxes,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the individual cargo box
+boxes,job_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking box to its associated parent freight job
+boxes,label_reference,VARCHAR(255),NO,None,-,Item label identifier or internal warehouse SKU
+boxes,length_cm,FLOAT,NO,None,-,Physical external length of the cargo carton (cm)
+boxes,width_cm,FLOAT,NO,None,-,Physical external width of the cargo carton (cm)
+boxes,height_cm,FLOAT,NO,None,-,Physical external height of the cargo carton (cm)
+boxes,weight_kg,FLOAT,NO,None,-,Individual carton gross mass/weight (kg)
+boxes,stop_order,INTEGER,NO,None,1,Delivery route drop-off sequence (governs LIFO loading order)
+boxes,fragile,BOOLEAN,NO,None,FALSE,Fragility flag (prevents heavy stacking above during packing)
+boxes,hazard,BOOLEAN,NO,None,FALSE,Hazardous materials flag requiring regulatory segregation
+boxes,qr_code,TEXT,YES,None,NULL,Encrypted QR code data string and verification checksum
+boxes,pack_x,FLOAT,YES,None,NULL,Calculated 3D Cartesian X-offset coordinate in truck bed (cm)
+boxes,pack_y,FLOAT,YES,None,NULL,Calculated 3D Cartesian Y-offset coordinate in truck bed (cm)
+boxes,pack_z,FLOAT,YES,None,NULL,Calculated 3D Cartesian Z-offset (elevation) in truck bed (cm)
+boxes,pack_rotation,INTEGER,NO,None,0,"Orthogonal 3D orientation index (0 to 5, across 6 degrees of freedom)"
+boxes,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when box specification was recorded
+deliveries,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the delivery waypoint stop
+deliveries,job_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking delivery stop to the overall freight job
+deliveries,box_id,VARCHAR(36),YES,FOREIGN KEY,NULL,Optional foreign key linking stop to a specific cargo unit
+deliveries,stop_order,INTEGER,NO,None,1,Sequential destination stop index along the transit corridor
+deliveries,recipient_name,VARCHAR(255),NO,None,-,Name of the designated consignee or receiving party
+deliveries,address,TEXT,YES,None,NULL,Physical delivery destination street address and gate notes
+deliveries,signature_url,TEXT,YES,None,NULL,Cloud storage URL for captured digital e-signature image
+deliveries,photo_url,TEXT,YES,None,NULL,Cloud storage URL for cargo condition photographic evidence
+deliveries,gps_lat,FLOAT,YES,None,NULL,GPS latitude coordinate captured at point of electronic handover
+deliveries,gps_lng,FLOAT,YES,None,NULL,GPS longitude coordinate captured at point of electronic handover
+deliveries,notes,TEXT,YES,None,NULL,Consignee delivery remarks or access instructions
+deliveries,delivered_at,TIMESTAMPTZ,YES,None,NULL,Actual timestamp of successful parcel handover and verification
+deliveries,status,VARCHAR(50),NO,None,'pending',"Stop status: 'pending', 'scanned', 'in_transit', 'arrived', 'delivered'"
+deliveries,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when delivery milestone was scheduled
+job_requests,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the marketplace proposal/bid
+job_requests,job_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key identifying the requested freight shipment
+job_requests,truck_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key identifying the carrier's proposed vehicle
+job_requests,trucker_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key identifying the bidding trucking enterprise
+job_requests,message,TEXT,YES,None,NULL,"Carrier remarks, service terms, or dispatch availability message"
+job_requests,status,VARCHAR(30),NO,None,'pending',"Proposal disposition: 'pending', 'accepted', 'rejected'"
+job_requests,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when the job proposal was submitted
+claims,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the dispute claim
+claims,company_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking claim to the filing claimant company
+claims,job_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking claim to the contested freight shipment
+claims,description,TEXT,NO,None,-,"Detailed factual report of cargo impairment, delay, or damage"
+claims,proof_url,TEXT,YES,None,NULL,Cloud storage link to photographic damage proof or bill of lading
+claims,status,VARCHAR(50),NO,None,'open',"Dispute status: 'open', 'reviewing', 'resolved', 'rejected'"
+claims,admin_notes,TEXT,YES,None,NULL,"Super admin review remarks, settlement determination, or findings"
+claims,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when the claim incident was logged
+audit_logs,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique system identifier for the telemetry audit record
+audit_logs,job_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key linking event to the active freight job
+audit_logs,box_id,VARCHAR(36),YES,FOREIGN KEY,NULL,Optional foreign key identifying specific parcel scanned
+audit_logs,user_id,VARCHAR(36),YES,FOREIGN KEY,NULL,Foreign key identifying operator or driver responsible for event
+audit_logs,action,VARCHAR(100),NO,None,-,"Event action: 'box_created', 'qr_generated', 'loading_scanned', 'transit_started', 'tamper_detected', 'delivery_scanned', 'pod_submitted', 'status_changed'"
+audit_logs,details,TEXT,YES,None,NULL,"JSON snapshot of event metadata, barcode data, or device state"
+audit_logs,gps_lat,FLOAT,YES,None,NULL,GPS latitude recorded at the exact moment of barcode scan
+audit_logs,gps_lng,FLOAT,YES,None,NULL,GPS longitude recorded at the exact moment of barcode scan
+audit_logs,scanned_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC immutable timestamp of transaction execution
+team_invites,id,VARCHAR(36),NO,PRIMARY KEY,UUIDv4,Unique identifier for the onboarding invitation
+team_invites,company_id,VARCHAR(36),NO,FOREIGN KEY,-,Foreign key identifying inviting corporate organization
+team_invites,email,VARCHAR(255),NO,None,-,Target corporate email address invited to join workspace
+team_invites,role,VARCHAR(50),NO,None,'user',"Assigned member authorization level: 'user', 'manager', 'driver'"
+team_invites,token,VARCHAR(255),NO,UNIQUE,-,Cryptographic single-use URL invitation validation token
+team_invites,status,VARCHAR(50),NO,None,'pending',"Token lifecycle status: 'pending', 'accepted', 'expired'"
+team_invites,created_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP,UTC timestamp when the invitation email was dispatched
+team_invites,expires_at,TIMESTAMPTZ,NO,None,CURRENT_TIMESTAMP + 7d,UTC timestamp when invitation token automatically expires

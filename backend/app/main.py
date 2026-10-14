@@ -2,7 +2,8 @@
 CargoSync Backend — Main FastAPI Application
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
@@ -34,6 +35,7 @@ from app.api.v1.scanning import router as scanning_router
 from app.api.v1.packing import router as packing_router
 from app.api.v1.audit import router as audit_router
 from app.api.v1.admin import router as admin_router
+from app.api.v1.checklist import router as checklist_router
 
 settings = get_settings()
 
@@ -68,11 +70,24 @@ app.add_middleware(
         settings.FRONTEND_URL,
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
     ],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"},
+    )
 
 # Register all routers under /api/v1 prefix
 app.include_router(auth_router, prefix="/api/v1")
@@ -86,6 +101,7 @@ app.include_router(scanning_router, prefix="/api/v1")
 app.include_router(packing_router, prefix="/api/v1")
 app.include_router(audit_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
+app.include_router(checklist_router, prefix="/api/v1")
 
 
 @app.get("/")

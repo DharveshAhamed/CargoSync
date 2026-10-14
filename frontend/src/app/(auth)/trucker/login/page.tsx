@@ -1,2 +1,5 @@
-import RoleLogin from '@/components/RoleLogin';
-export default function TruckerLogin(){return <RoleLogin role="trucker"/>}
+import { redirect } from 'next/navigation';
+
+export default function TruckerLoginPage() {
+  redirect('/?role=trucker&mode=login#access');
+}

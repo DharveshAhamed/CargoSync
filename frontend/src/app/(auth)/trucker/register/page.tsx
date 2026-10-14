@@ -1,1 +1,5 @@
-import RoleRegister from '@/components/RoleRegister'; export default function Page(){return <RoleRegister role="trucker"/>}
+import { redirect } from 'next/navigation';
+
+export default function TruckerRegisterPage() {
+  redirect('/?role=trucker&mode=register#access');
+}
