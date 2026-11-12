@@ -1,310 +1,358 @@
-# CargoSync — Intelligent Freight & Fleet Orchestration
+# CargoSync — Intelligent Freight & Fleet Management Platform
 
-> A full-stack web application for logistics companies to manage their fleets, optimize cargo loading with 3D bin packing, and track deliveries with QR-based chain of custody.
+> Smart Logistics. Optimized Loading. Reliable Deliveries.
 
----
+CargoSync is a full-stack freight and fleet management platform designed to streamline logistics operations by connecting shippers, fleet managers, and truck operators through a centralized digital system.
 
-## 🏗 Architecture Overview
+The platform combines intelligent 3D cargo optimization, vehicle capacity management, delivery planning, and checklist-based shipment verification to improve transportation efficiency, reduce manual operations, and provide better visibility throughout the delivery lifecycle.
 
-```
-┌─────────────────────┐     HTTP / REST      ┌────────────────────────┐     SQL      ┌───────────────┐
-│   Next.js Frontend  │ ◄──────────────────► │   FastAPI Backend      │ ◄──────────► │   Supabase    │
-│   (React 19 + TS)   │    localhost:3000     │   (Python 3.14)        │   :5432      │  (PostgreSQL) │
-│   Tailwind CSS v4   │                      │   SQLAlchemy + Alembic │              │               │
-│   Three.js / R3F    │                      │   JWT Auth (HS256)     │              │               │
-└─────────────────────┘                      └────────────────────────┘              └───────────────┘
-```
-
-### Frontend (`frontend/`)
-- **Framework**: Next.js 16 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4 with warm soothing color palette
-- **3D Rendering**: Three.js via `@react-three/fiber` + `@react-three/drei`
-- **HTTP Client**: Axios with JWT interceptors
-- **QR Scanning**: `html5-qrcode`
-
-### Backend (`backend/`)
-- **Framework**: FastAPI (Python)
-- **ORM**: SQLAlchemy 2.0 with Pydantic v2 schemas
-- **Migrations**: Alembic
-- **Auth**: JWT (python-jose + passlib/bcrypt)
-- **Database Driver**: psycopg3
-- **PDF Generation**: ReportLab
-- **QR Code Generation**: qrcode library
-
-### Database (Supabase)
-- **Engine**: PostgreSQL hosted on Supabase
-- **10 tables**: companies, users, admins, trucks, drivers, jobs, boxes, deliveries, claims, audit_logs, team_invites
+CargoSync aims to simplify the entire freight management workflow — from creating shipment requests and optimizing truck loading to managing deliveries and verifying cargo handovers.
 
 ---
 
-## 📁 Project Structure
+## Key Features
 
+### 1. Intelligent 3D Cargo Optimization
+- Implements 3D bin-packing logic to optimize cargo placement inside trucks
+- Maximizes available cargo space and minimizes unused capacity
+- Evaluates box dimensions, weight, and loading constraints
+- Provides an interactive 3D view of the optimized loading arrangement
+- Supports efficient loading sequences for multiple delivery destinations
+
+### 2. Fleet and Vehicle Management
+- Manage and maintain truck information
+- Store vehicle dimensions and payload capacities
+- Manage driver information and vehicle assignments
+- Track fleet availability and transportation operations
+- Match transportation requirements with suitable vehicle capacities
+
+### 3. Checklist-Based Loading and Delivery Verification
+- Provides digital checklists for cargo loading and delivery operations
+- Allows drivers or authorized personnel to verify cargo items during loading
+- Tracks completed and pending checklist items
+- Supports delivery-side verification of individual cargo items
+- Maintains shipment progress and helps prevent missing-item discrepancies
+
+### 4. Multi-Stop Delivery Management
+- Supports shipments involving multiple delivery destinations
+- Organizes cargo based on delivery stop sequences
+- Uses reverse delivery sequencing to ensure the correct loading order
+- Helps simplify unloading at different destinations
+
+### 5. Job and Shipment Management
+- Create and manage freight transportation jobs
+- Record cargo dimensions, weight, and delivery information
+- Manage shipment status throughout its lifecycle
+- Connect transportation requirements with available fleet resources
+- Maintain organized shipment records
+
+### 6. Interactive Dashboard
+- Centralized dashboard for monitoring logistics operations
+- Provides visibility into fleet, drivers, jobs, and deliveries
+- Helps users manage transportation activities efficiently
+
+### 7. Authentication and Role-Based Access
+- Secure user authentication using JWT
+- Separate administrative and company-level access
+- Protected dashboard routes
+- Password hashing and secure session management
+- Password reset functionality
+
+### 8. Digital Loading Documentation
+- Generate loading sheets for transportation jobs
+- Provide cargo placement information
+- Support organized loading and delivery operations
+
+---
+
+## Technology Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
+| 3D Visualization | Three.js, React Three Fiber, React Three Drei |
+| Backend | Python, FastAPI |
+| Database | Supabase PostgreSQL |
+| ORM and Validation | SQLAlchemy, Pydantic |
+| Authentication | JWT, Python-JOSE, bcrypt |
+| API Communication | REST API, Axios |
+| Document Generation | ReportLab |
+
+---
+
+## System Architecture
+
+CargoSync follows a full-stack architecture consisting of a Next.js frontend, a Python FastAPI backend, and a Supabase PostgreSQL database.
+
+```text
+             ┌──────────────────────────┐
+             │       FRONTEND           │
+             │                          │
+             │       Next.js 16         │
+             │        React 19          │
+             │     TypeScript           │
+             │      Tailwind CSS        │
+             │       Three.js           │
+             └────────────┬─────────────┘
+                          │
+                    REST API / HTTP
+                          │
+             ┌────────────▼─────────────┐
+             │        BACKEND           │
+             │                          │
+             │        FastAPI           │
+             │         Python           │
+             │       SQLAlchemy         │
+             │       JWT Security       │
+             │    Cargo Optimization    │
+             └────────────┬─────────────┘
+                          │
+                     SQL Queries
+                          │
+             ┌────────────▼─────────────┐
+             │        DATABASE         │
+             │                          │
+             │   Supabase PostgreSQL    │
+             │                          │
+             │  Users, Trucks, Drivers  │
+             │  Jobs, Cargo, Deliveries │
+             │  Claims, Audit Logs      │
+             └──────────────────────────┘
 ```
-Cargo Sync/
-├── frontend/                    # Next.js 16 frontend
+
+### Application Workflow
+
+1. Users register and access the platform through secure authentication.
+2. Shipment details and cargo information are entered into the system.
+3. The backend processes cargo information and calculates an optimized loading arrangement.
+4. The optimized arrangement is displayed through an interactive 3D visualization.
+5. Suitable vehicles and drivers are managed for transportation operations.
+6. Loading checklists are used to verify cargo before transportation.
+7. Delivery checklists help verify cargo at individual delivery destinations.
+8. Shipment progress and operational records are maintained in the database.
+
+---
+
+## 3D Bin Packing and Cargo Optimization
+
+One of the core components of CargoSync is its intelligent cargo optimization engine.
+
+The backend implements a First Fit Decreasing Height (FFDH)-based approach to determine suitable cargo placements inside a truck.
+
+### Optimization Process
+1. Sort cargo boxes based on volume.
+2. Evaluate possible box rotations.
+3. Check available truck dimensions.
+4. Validate vehicle weight capacity.
+5. Apply cargo placement constraints.
+6. Consider reverse delivery sequencing.
+7. Generate 3D placement coordinates.
+8. Visualize the final loading arrangement.
+
+This optimized placement helps improve cargo-space utilization and simplifies physical loading operations.
+
+---
+
+## Checklist-Based Verification Workflow
+
+CargoSync uses digital checklists to manage cargo verification during loading and delivery.
+
+### Loading Verification
+- Display the cargo items assigned to a shipment
+- Verify each item during the loading process
+- Track completed and pending items
+- Maintain loading progress
+
+### Delivery Verification
+- Display cargo items associated with each delivery stop
+- Verify items during unloading and handover
+- Track delivery checklist completion
+- Update shipment progress based on verification status
+
+This approach provides a simple and structured method of monitoring cargo movement and reducing manual verification errors.
+
+---
+
+## Project Structure
+
+```text
+CargoSync/
+│
+├── frontend/
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── (auth)/          # Auth pages (login, register, reset)
-│   │   │   │   ├── login/       # Company user login
-│   │   │   │   ├── admin/login/ # Admin login (separate page)
-│   │   │   │   ├── register/    # Company registration
-│   │   │   │   └── reset-password/
-│   │   │   ├── (dashboard)/     # Protected dashboard pages
-│   │   │   │   ├── dashboard/   # Overview dashboard
-│   │   │   │   ├── trucks/      # Fleet management
-│   │   │   │   ├── drivers/     # Driver CRUD + assign/unassign
-│   │   │   │   ├── jobs/        # Job management + detail + new job
-│   │   │   │   ├── cargo/       # Cargo/box overview per job
-│   │   │   │   ├── scanning/    # QR scanner + manifest validation
-│   │   │   │   ├── deliveries/  # Delivery tracking + POD
-│   │   │   │   ├── load-plan/   # Three.js 3D load plan visualizer
-│   │   │   │   ├── audit-log/   # Chain of custody log
-│   │   │   │   ├── settings/    # Company profile + team invites
-│   │   │   │   └── admin/       # Admin panel (companies, users, claims)
-│   │   │   ├── layout.tsx       # Root layout (fonts, meta)
-│   │   │   ├── page.tsx         # Landing/home page
-│   │   │   └── globals.css      # Theme tokens + animations
 │   │   ├── components/
-│   │   │   └── three/           # Three.js 3D components
 │   │   ├── lib/
-│   │   │   ├── api.ts           # Axios instance with JWT interceptors
-│   │   │   └── auth.ts          # Auth utilities (save, get, logout)
 │   │   ├── types/
-│   │   │   └── index.ts         # TypeScript interfaces
-│   │   └── middleware.ts        # Route protection middleware
-│   ├── package.json
-│   └── .env.local               # Frontend environment variables
+│   │   └── middleware.ts
+│   ├── public/
+│   └── package.json
 │
-├── backend/                     # FastAPI backend
+├── backend/
 │   ├── app/
-│   │   ├── api/v1/              # API route handlers
-│   │   │   ├── auth.py          # Login, register, password reset
-│   │   │   ├── trucks.py        # Truck CRUD
-│   │   │   ├── drivers.py       # Driver CRUD + assign/unassign
-│   │   │   ├── jobs.py          # Job CRUD + status transitions
-│   │   │   ├── boxes.py         # Box/cargo CRUD
-│   │   │   ├── deliveries.py    # Delivery management + POD
-│   │   │   ├── qr.py            # QR code generation
-│   │   │   ├── scanning.py      # Scan validation + manifest
-│   │   │   ├── packing.py       # 3D bin packing computation
-│   │   │   ├── audit.py         # Chain of custody audit log
-│   │   │   └── admin.py         # Platform admin operations
+│   │   ├── api/
 │   │   ├── core/
-│   │   │   ├── config.py        # Pydantic Settings (.env loading)
-│   │   │   ├── deps.py          # DB session, auth dependencies
-│   │   │   └── security.py      # JWT encode/decode, password hashing
-│   │   ├── models/              # SQLAlchemy ORM models
-│   │   │   ├── company.py, user.py, admin.py
-│   │   │   ├── truck.py, driver.py, job.py
-│   │   │   ├── box.py, delivery.py, claim.py
-│   │   │   ├── audit_log.py, team_invite.py
-│   │   │   └── __init__.py
-│   │   ├── schemas/             # Pydantic request/response schemas
+│   │   ├── models/
+│   │   ├── schemas/
 │   │   ├── services/
-│   │   │   ├── bin_packing.py   # 3D bin packing algorithm (FFDH)
-│   │   │   ├── qr_service.py    # QR code generation
-│   │   │   └── pdf_service.py   # PDF loading sheet export
-│   │   └── main.py              # FastAPI app entry point
-│   ├── alembic/                 # Database migrations
-│   │   ├── env.py
-│   │   ├── script.py.mako
-│   │   └── versions/
-│   ├── alembic.ini
-│   ├── requirements.txt
-│   └── .env                     # Backend environment variables
+│   │   └── main.py
+│   ├── alembic/
+│   └── requirements.txt
 │
-├── diagrams/                    # UML/ER diagrams (reference)
-├── .gitignore
-└── PROJECT_SUMMARY.md           # This file
+├── database tables/
+├── diagrams/
+├── new diagrams/
+├── screenshots/
+├── PROJECT_SUMMARY.md
+├── README.md
+└── ...
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- **Node.js** ≥ 20
-- **Python** ≥ 3.11
-- **Supabase** account (free tier is fine)
+Make sure you have the following installed:
 
-### 1. Backend Setup
+- Node.js 20 or above
+- Python 3.11 or above
+- npm
+- Git
+- Supabase account
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/DharveshAhamed/CargoSync.git
+cd CargoSync
+```
+
+### 2. Backend Setup
 
 ```bash
 cd backend
 
-# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # macOS/Linux
-# venv\Scripts\activate   # Windows
+```
 
-# Install dependencies
+Activate the virtual environment:
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+macOS / Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
 
-# Configure environment
-# Edit .env and fill in your Supabase credentials:
-#   DATABASE_URL=postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres
-#   SUPABASE_SERVICE_KEY=<your-service-role-key>
-#   SECRET_KEY=<generate-a-random-64-char-string>
+Configure backend environment variables in `.env` using your Supabase credentials and application secrets.
 
-# Run database migrations
+Run database migrations:
+
+```bash
 alembic upgrade head
+```
 
-# Start the API server
+Start the backend server:
+
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-The API will be available at `http://localhost:8000` with interactive docs at `http://localhost:8000/docs`.
+Backend API:
+- http://localhost:8000
 
-### 2. Frontend Setup
+API Documentation:
+- http://localhost:8000/docs
+
+### 3. Frontend Setup
+
+Open another terminal:
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
+```
 
-# Configure environment
-# .env.local should already contain:
-#   NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-#   NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
-#   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+Configure the required environment variables in `.env.local`.
 
-# Start the dev server
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000`.
+Frontend application:
+- http://localhost:3000
 
 ---
 
-## 📋 Module Reference
+## Security
 
-### Phase 1 — Authentication (5 modules)
-| Module | Description |
-|--------|-------------|
-| Company Registration | Creates company + first admin user account |
-| Login (User & Admin) | Separate login pages with JWT token issuance |
-| JWT Session Management | Token-based auth with auto-refresh and protected routes |
-| Password Reset | Email-based password reset flow via Supabase Auth |
-| Team Management | Invite team members by email, assign roles (user/manager/driver) |
+CargoSync incorporates several security practices:
 
-### Phase 2 — Core Operations (5 modules)
-| Module | Description |
-|--------|-------------|
-| Truck Management | Add, edit, deactivate fleet vehicles with dimensions & weight capacity |
-| Driver Management | Add drivers, assign/unassign to trucks, license tracking |
-| Job Management | Create freight jobs with status workflow (Draft → Delivered) |
-| Cargo Entry | Add boxes with dimensions, weight, fragile/hazard flags, stop ordering |
-| Delivery Stops | Multi-stop delivery management per job |
-
-### Phase 3 — Optimization Engine (4 modules)
-| Module | Description |
-|--------|-------------|
-| 3D Bin Packing | First Fit Decreasing Height algorithm with weight/fragile constraints |
-| Reverse Delivery Sequencing | Boxes loaded in reverse stop order for efficient unloading |
-| Three.js 3D Visualizer | Interactive 3D view of truck cargo area with color-coded boxes |
-| PDF Loading Sheet | Downloadable PDF with loading order, box positions, and QR codes |
-
-### Phase 4 — Scanning & Chain of Custody (7 modules)
-| Module | Description |
-|--------|-------------|
-| QR Code Generator | Unique QR per box encoding box_id, job_id, and label |
-| Printable QR Labels | Formatted labels for printing and affixing to cargo |
-| Loading Scan | Camera-based QR scanning to validate boxes against manifest |
-| Tamper Monitoring | Flag unexpected scans at wrong location/time |
-| Delivery Scan | Per-stop scan verification for correct delivery |
-| Proof of Delivery | Signature capture, photo upload, GPS auto-capture |
-| Audit Log | Complete chain of custody trail with timestamps and GPS |
+- JWT-based authentication
+- Password hashing using bcrypt
+- Role-based access control
+- Protected frontend routes
+- Backend request validation using Pydantic
+- Database operations through SQLAlchemy ORM
+- Configured CORS policies
 
 ---
 
-## 🔐 Security
+## Project Objectives
 
-- **JWT Authentication** with HS256 signing (configurable expiry)
-- **Password Hashing** using bcrypt via passlib
-- **Route Protection** via Next.js middleware (redirects to login)
-- **CORS** configured to allow only the frontend origin
-- **Role-Based Access** — Admin vs Company User vs Driver
-- **Input Validation** — Pydantic schemas enforce data constraints
-- **SQL Injection Prevention** — SQLAlchemy ORM with parameterized queries
-
----
-
-## 🔌 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/auth/register` | Register company + admin user |
-| POST | `/api/v1/auth/login` | User login → JWT tokens |
-| POST | `/api/v1/auth/admin/login` | Admin login → JWT tokens |
-| POST | `/api/v1/auth/reset-password` | Request password reset |
-| GET | `/api/v1/auth/me` | Get current user profile |
-| GET/POST/PUT/DELETE | `/api/v1/trucks/` | Truck CRUD |
-| GET/POST/PUT/DELETE | `/api/v1/drivers/` | Driver CRUD |
-| POST | `/api/v1/drivers/{id}/assign/{truck_id}` | Assign driver to truck |
-| POST | `/api/v1/drivers/{id}/unassign` | Unassign driver |
-| GET/POST/PUT | `/api/v1/jobs/` | Job CRUD + status transitions |
-| GET/POST | `/api/v1/boxes/` | Box/cargo CRUD |
-| GET/POST | `/api/v1/deliveries/` | Delivery management |
-| POST | `/api/v1/packing/compute/{job_id}` | Run 3D bin packing |
-| GET | `/api/v1/packing/loading-sheet/{job_id}` | Download PDF loading sheet |
-| POST | `/api/v1/qr/generate/{job_id}` | Generate QR codes for all boxes |
-| GET | `/api/v1/scanning/manifest/{job_id}` | Get scanning manifest |
-| POST | `/api/v1/scanning/scan` | Record a scan event |
-| GET | `/api/v1/audit/job/{job_id}` | Get audit log for a job |
-| GET/POST | `/api/v1/admin/companies` | Admin: manage companies |
-| GET/POST | `/api/v1/admin/users` | Admin: manage users |
-| GET | `/api/v1/health` | Health check |
-
-Full interactive API documentation is available at `/docs` (Swagger UI) or `/redoc`.
+- Improve cargo-space utilization through intelligent 3D optimization
+- Simplify fleet and driver management
+- Streamline shipment and delivery operations
+- Improve loading and unloading accuracy through digital checklists
+- Reduce manual logistics processes
+- Provide a centralized platform for freight management
 
 ---
 
-## 🎨 Design System
+## Future Enhancements
 
-The UI uses a **warm, soothing color palette** designed to be easy on the eyes:
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--color-primary` | `#C17B4A` | Buttons, links, active nav items |
-| `--color-secondary` | `#6B8F71` | Success states, driver badges |
-| `--color-accent` | `#D4A853` | Warnings, highlights |
-| `--color-bg` | `#FFFBF5` | Page background |
-| `--color-card` | `#FFFFFF` | Card backgrounds |
-| `--color-text` | `#3D3631` | Primary text |
-| `--color-danger` | `#C25B56` | Errors, deactivate buttons |
-
-Typography: **Inter** font family (Google Fonts).
+- Real-time GPS-based vehicle tracking
+- AI-powered logistics and demand prediction
+- Dynamic route optimization using live traffic data
+- Advanced fleet performance analytics
+- Integrated payment and settlement systems
+- Mobile application for drivers and fleet operators
 
 ---
 
-## 📝 Job Status Workflow
+## Contributors
 
-```
-DRAFT → POSTED → MATCHED → ACCEPTED → LOADING → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED
-```
+Developed as an MCA Final Semester Project.
 
-Each transition is tracked in the audit log with timestamp, user, and GPS coordinates.
-
----
-
-## 🧊 3D Bin Packing Algorithm
-
-The backend implements a **First Fit Decreasing Height (FFDH)** variant:
-
-1. Sort boxes by volume (largest first)
-2. For each box, try all 6 rotations
-3. Place at the first valid position that satisfies:
-   - Fits within truck dimensions
-   - Total weight ≤ truck capacity
-   - Fragile items placed on top
-   - Boxes loaded in reverse delivery order (last stop loaded first)
-4. Returns placement coordinates (x, y, z, rotation) for each box
-5. Computes packing efficiency percentage
+- Dharvesh Ahamed
+- Farhad Shihab Yaseen
 
 ---
 
-## 📄 License
+## Project Information
 
-Private project — all rights reserved.
+- Project Name: CargoSync
+- Category: Full-Stack Web Application
+- Domain: Logistics & Fleet Management
+- Frontend: Next.js, React, TypeScript
+- Backend: Python, FastAPI
+- Database: Supabase PostgreSQL
+- Repository: https://github.com/DharveshAhamed/CargoSync
+
+---
+
+If you find CargoSync interesting, consider giving the repository a star.

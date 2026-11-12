@@ -1,376 +1,215 @@
-# 🚚 CargoSync – Intelligent Freight & Fleet Management Platform
+# CargoSync
 
 <p align="center">
-  **Smart Logistics. Optimized Loading. Reliable Deliveries.**
+  <strong>Smart Logistics. Optimized Loading. Reliable Deliveries.</strong>
 </p>
 
-CargoSync is a full-stack freight and fleet management platform designed to streamline logistics operations by connecting shippers, fleet managers, and truck operators through a centralized digital system.
+CargoSync is a full-stack freight and fleet management platform designed to help logistics teams plan shipments, manage vehicles and drivers, optimize cargo loading, and verify deliveries through a centralized digital system.
 
-The platform combines intelligent 3D cargo optimization, vehicle capacity management, delivery planning, and checklist-based shipment verification to improve transportation efficiency, reduce manual operations, and provide better visibility throughout the delivery process.
+The platform combines intelligent 3D cargo optimization, fleet tracking, shipment workflow management, and checklist-based verification to improve operational efficiency, reduce manual coordination, and provide better visibility across the delivery lifecycle.
 
-CargoSync aims to simplify the entire freight management lifecycle — from creating shipment requests and optimizing truck loading to managing deliveries and verifying cargo handovers.
+## Overview
 
----
+CargoSync supports the complete freight management process from shipment creation to loading, execution, and final delivery. It gives shippers, dispatch teams, and fleet operators a unified workflow for managing jobs, cargo, trucks, drivers, and delivery checkpoints.
 
-## 🌟 Key Features
+## Key Features
 
-### 📦 1. Intelligent 3D Cargo Optimization
-- Implements 3D bin-packing algorithms to optimize cargo placement inside trucks.
-- Maximizes available cargo space and minimizes unused capacity.
-- Considers box dimensions, weight, and loading constraints.
-- Provides an interactive 3D visualization of the optimized loading arrangement.
-- Supports efficient loading sequences for multiple delivery destinations.
+### 3D Cargo Optimization
+- Uses 3D bin-packing logic to determine efficient cargo placement inside trucks
+- Maximizes available vehicle space and improves loading efficiency
+- Evaluates box dimensions, weight constraints, and loading sequence
+- Provides a visualized truck loading arrangement for better planning
 
-### 🚛 2. Fleet & Vehicle Management
-- Manage and maintain truck information.
-- Store vehicle dimensions and weight capacities.
-- Manage driver information and vehicle assignments.
-- Track fleet availability and transportation operations.
-- Match transportation requirements with suitable vehicle capacities.
+### Fleet and Vehicle Management
+- Manage truck records, dimensions, and capacity details
+- Maintain driver profiles and assignments
+- Match transportation requirements with suitable fleet assets
+- Track fleet readiness and operational usage
 
-### 📋 3. Checklist-Based Loading & Delivery Verification
-- Provides digital checklists for cargo loading and delivery operations.
-- Allows drivers or authorized users to verify cargo items during loading.
-- Tracks completed and pending checklist items.
-- Supports delivery-side verification of individual cargo items.
-- Maintains shipment progress and helps prevent missing-item discrepancies.
-- Improves accountability without requiring QR-code scanning.
+### Shipment and Job Management
+- Create and monitor freight jobs from start to completion
+- Manage cargo dimensions, weights, destinations, and delivery information
+- Track shipment status throughout the workflow
+- Organize job records in a central platform
 
-### 🗺️ 4. Multi-Stop Delivery Management
-- Supports shipments involving multiple delivery destinations.
-- Organizes cargo based on delivery stop sequences.
-- Uses reverse delivery sequencing to ensure the correct loading order.
-- Helps simplify unloading operations at different destinations.
+### Checklist-Based Loading and Delivery Verification
+- Use digital checklists to validate cargo during loading and unloading
+- Record completed and pending verification steps
+- Monitor delivery progress and reduce loading discrepancies
+- Improve accountability without relying only on ad hoc manual checks
 
-### 💼 5. Job & Shipment Management
-- Create and manage freight transportation jobs.
-- Record cargo dimensions, weight, and delivery information.
-- Manage shipment status throughout its lifecycle.
-- Connect transportation requirements with available fleet resources.
-- Maintain organized shipment records.
+### Multi-Stop Delivery Support
+- Handle jobs with multiple destinations and stop sequences
+- Organize cargo according to delivery order
+- Support reverse sequencing for more efficient unloading at destination points
 
-### 📊 6. Interactive Dashboard
-- Centralized dashboard for monitoring logistics operations.
-- Provides visibility into fleet, drivers, jobs, and deliveries.
-- Helps users manage transportation activities efficiently.
+### Authentication and Role-Based Access
+- Secure user logins with JWT-based authentication
+- Separate admin and company-level access
+- Protect sensitive routes and operations
+- Support password reset and secure session flows
 
-### 🔐 7. Authentication & Role-Based Access
-- Secure user authentication using JWT.
-- Separate administrative and company-level access.
-- Protected dashboard routes.
-- Password hashing and secure session management.
-- Password reset functionality.
+### Digital Loading Documentation
+- Generate shipment loading sheets for operational reference
+- Provide structured cargo placement information
+- Support smoother coordination between dispatch and field teams
 
-### 📄 8. Digital Loading Documentation
-- Generate loading sheets for transportation jobs.
-- Provide cargo placement information.
-- Support organized loading and delivery operations.
-
----
-
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technologies |
 |---|---|
-| Frontend Framework | Next.js 16 |
-| UI Library | React 19 |
-| Programming Language | TypeScript |
-| Styling | Tailwind CSS v4 |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
 | 3D Visualization | Three.js, React Three Fiber, React Three Drei |
-| Backend Framework | Python, FastAPI |
+| Backend | Python, FastAPI |
 | Database | Supabase PostgreSQL |
-| ORM | SQLAlchemy |
-| Database Migrations | Alembic |
+| ORM / Validation | SQLAlchemy, Pydantic |
 | Authentication | JWT, Python-JOSE, bcrypt |
 | API Communication | REST API, Axios |
-| PDF Generation | ReportLab |
+| Document Generation | ReportLab |
 
----
+## System Architecture
 
-## 🏗️ System Architecture
-
-CargoSync follows a full-stack architecture consisting of a Next.js frontend, a Python FastAPI backend, and a Supabase PostgreSQL database.
+CargoSync follows a full-stack architecture with a Next.js frontend, a FastAPI backend, and a PostgreSQL database hosted on Supabase.
 
 ```text
              ┌──────────────────────────┐
-             │       FRONTEND           │
-             │                          │
-             │       Next.js 16         │
-             │        React 19          │
-             │     TypeScript           │
-             │      Tailwind CSS        │
-             │       Three.js           │
+             │         FRONTEND         │
+             │ Next.js 16 + React 19    │
+             │ TypeScript + Tailwind    │
+             │      Three.js UI         │
              └────────────┬─────────────┘
                           │
                     REST API / HTTP
                           │
              ┌────────────▼─────────────┐
-             │        BACKEND           │
-             │                          │
-             │        FastAPI           │
-             │         Python           │
-             │       SQLAlchemy         │
-             │       JWT Security       │
-             │    Cargo Optimization    │
+             │         BACKEND          │
+             │      FastAPI + Python    │
+             │   SQLAlchemy + JWT       │
+             │   Cargo Optimization     │
              └────────────┬─────────────┘
                           │
                      SQL Queries
                           │
              ┌────────────▼─────────────┐
-             │        DATABASE         │
-             │                          │
-             │   Supabase PostgreSQL    │
-             │                          │
-             │  Users, Trucks, Drivers  │
-             │  Jobs, Cargo, Deliveries │
-             │  Claims, Audit Logs      │
+             │         DATABASE         │
+             │     Supabase PostgreSQL   │
+             │ Users, Trucks, Drivers   │
+             │ Jobs, Cargo, Deliveries │
+             │ Claims, Audit Logs       │
              └──────────────────────────┘
 ```
 
-### Application Workflow
+## Typical Workflow
 
 1. Users register and access the platform through secure authentication.
-2. Shipment details and cargo information are entered into the system.
-3. The backend processes cargo information and calculates an optimized loading arrangement.
-4. The optimized arrangement is displayed through an interactive 3D visualization.
-5. Suitable vehicles and drivers are managed for transportation operations.
-6. Loading checklists are used to verify cargo before transportation.
-7. Delivery checklists help verify cargo at individual delivery destinations.
-8. Shipment progress and operational records are maintained in the database.
+2. Shipment details, cargo, and delivery information are entered into the system.
+3. The backend evaluates vehicle and cargo requirements.
+4. An optimized loading arrangement is generated for the truck.
+5. Vehicles and drivers are assigned and monitored.
+6. Loading and delivery checklists are used to validate cargo movement.
+7. Operational records and progress are maintained for traceability.
 
----
-
-## 🧊 3D Bin Packing & Cargo Optimization
-
-One of the core components of CargoSync is its intelligent cargo optimization engine.
-
-The backend implements a First Fit Decreasing Height (FFDH) based approach to determine suitable cargo placements inside a truck.
-
-**Optimization process:**
-
-1. Sort cargo boxes based on volume.
-2. Evaluate possible box rotations.
-3. Check available truck dimensions.
-4. Validate vehicle weight capacity.
-5. Apply cargo placement constraints.
-6. Consider reverse delivery sequencing.
-7. Generate 3D placement coordinates.
-8. Visualize the final loading arrangement.
-
-The optimized results help improve cargo-space utilization and simplify physical loading operations.
-
----
-
-## 📋 Checklist-Based Verification Workflow
-
-CargoSync uses digital checklists to manage cargo verification during loading and delivery.
-
-**Loading verification**
-- Display the cargo items assigned to a shipment.
-- Verify each item during the loading process.
-- Track completed and pending items.
-- Maintain loading progress.
-
-**Delivery verification**
-- Display cargo items associated with each delivery stop.
-- Verify items during unloading and handover.
-- Track delivery checklist completion.
-- Update shipment progress based on verification status.
-
-This approach provides a simple and structured method of monitoring cargo movement and reducing manual verification errors.
-
----
-
-## 📂 Project Structure
+## Project Structure
 
 ```text
 CargoSync/
-│
-├── frontend/
+├── frontend/                  # Next.js frontend application
 │   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   ├── lib/
-│   │   ├── types/
-│   │   └── middleware.ts
 │   ├── public/
 │   └── package.json
-│
-├── backend/
+├── backend/                   # FastAPI backend service
 │   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   └── main.py
 │   ├── alembic/
 │   └── requirements.txt
-│
-├── database tables/
-│
-├── diagrams/
-│
-├── new diagrams/
-│
-├── screenshots/
-│
-├── PROJECT_SUMMARY.md
-│
-└── README.md
+├── database tables/           # Database schema and documentation
+├── diagrams/                  # Architecture and ER diagrams
+├── screenshots/               # Project screenshots
+├── PROJECT_SUMMARY.md         # Detailed project summary
+├── .gitignore
+├── README.md
+└── ...
 ```
 
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-
-Make sure you have the following installed:
-
 - Node.js 20 or above
 - Python 3.11 or above
 - npm
 - Git
 - Supabase account
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/DharveshAhamed/CargoSync.git
-
-cd CargoSync
-```
-
-### 2. Backend Setup
+### Backend Setup
 
 ```bash
 cd backend
-
 python -m venv venv
-```
-
-Activate the virtual environment:
-
-**Windows**
-```bash
-venv\Scripts\activate
-```
-
-**macOS / Linux**
-```bash
 source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
 pip install -r requirements.txt
-```
-
-Configure the backend environment variables in `.env` using your Supabase database credentials and application secrets.
-
-Run database migrations:
-
-```bash
 alembic upgrade head
-```
-
-Start the backend server:
-
-```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-Backend API:
+API docs will be available at:
+- http://localhost:8000
+- http://localhost:8000/docs
 
-`http://localhost:8000`
-
-API Documentation:
-
-`http://localhost:8000/docs`
-
-### 3. Frontend Setup
-
-Open another terminal:
+### Frontend Setup
 
 ```bash
 cd frontend
-
 npm install
-```
-
-Configure the required environment variables in `.env.local`.
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-Frontend application:
+The app will run at:
+- http://localhost:3000
 
-`http://localhost:3000`
+## Security
 
----
+CargoSync incorporates several security practices, including:
+- JWT-based authentication
+- Password hashing with bcrypt
+- Role-based access control
+- Protected dashboard routes
+- Input validation with Pydantic
+- SQLAlchemy ORM-based database interaction
+- CORS configuration for secure API access
 
-## 🔐 Security
+## Project Objectives
 
-CargoSync incorporates several security practices:
+- Improve cargo-space utilization using intelligent 3D optimization
+- Simplify fleet and driver management
+- Streamline shipment and delivery operations
+- Improve loading accuracy through verification workflows
+- Reduce manual processing in logistics operations
+- Provide a centralized platform for freight coordination
 
-- JWT-based authentication.
-- Password hashing using bcrypt.
-- Role-based access control.
-- Protected frontend routes.
-- Backend request validation using Pydantic.
-- Database operations through SQLAlchemy ORM.
-- Configured CORS policies.
+## Future Enhancements
 
----
+- Real-time GPS vehicle tracking
+- AI-based demand and route prediction
+- Dynamic route optimization with traffic and delivery data
+- Enhanced fleet analytics and performance dashboards
+- Mobile support for drivers and field operators
 
-## 🎯 Project Objectives
+## Contributors
 
-- Improve cargo-space utilization through intelligent 3D optimization.
-- Simplify fleet and driver management.
-- Streamline shipment and delivery operations.
-- Improve loading and unloading accuracy through digital checklists.
-- Reduce manual logistics processes.
-- Provide a centralized platform for freight management.
+Developed as an MCA Final Semester Project.
 
----
+- Dharvesh Ahamed
+- Farhad Shihab Yaseen
 
-## 🔮 Future Enhancements
+## Project Information
 
-- Real-time GPS-based vehicle tracking.
-- AI-powered logistics and demand prediction.
-- Dynamic route optimization using live traffic data.
-- Advanced fleet performance analytics.
-- Integrated payment and settlement systems.
-- Mobile application for drivers and fleet operators.
+- Project Name: CargoSync
+- Category: Full-Stack Web Application
+- Domain: Logistics & Fleet Management
+- Frontend: Next.js, React, TypeScript
+- Backend: Python, FastAPI
+- Database: Supabase PostgreSQL
+- Repository: https://github.com/DharveshAhamed/CargoSync
 
----
+## License
 
-## 👨‍💻 Contributors
-
-**Developed as an MCA Final Semester Project.**
-
-- **Dharvesh Ahamed**
-- **Farhad Shihab Yaseen**
-
----
-
-## 📌 Project Information
-
-| Detail | Information |
-|---|---|
-| Project Name | CargoSync |
-| Category | Full-Stack Web Application |
-| Domain | Logistics & Fleet Management |
-| Frontend | Next.js, React, TypeScript |
-| Backend | Python, FastAPI |
-| Database | Supabase PostgreSQL |
-| Repository | [GitHub - CargoSync](https://github.com/DharveshAhamed/CargoSync) |
-
----
-
-⭐ If you find CargoSync interesting, consider giving the repository a star!
+This project is for academic and portfolio use and is currently treated as a private project.
