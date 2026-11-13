@@ -199,10 +199,10 @@ CargoSync/
 │   ├── alembic/
 │   └── requirements.txt
 │
-├── database tables/
+├── database/
 ├── diagrams/
-├── new diagrams/
 ├── screenshots/
+├── LICENSE
 ├── PROJECT_SUMMARY.md
 ├── README.md
 └── ...
@@ -271,10 +271,10 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 Backend API:
-- http://localhost:8000
+- http://localhost:8000 (API root)
 
 API Documentation:
-- http://localhost:8000/docs
+- http://localhost:8000/docs (Swagger docs)
 
 ### 3. Frontend Setup
 

@@ -3,7 +3,9 @@ CargoSync Backend — Environment Configuration
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
+from typing import Any
 
 
 class Settings(BaseSettings):
@@ -11,6 +13,15 @@ class Settings(BaseSettings):
     APP_NAME: str = "CargoSync API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
+
+    @field_validator("DEBUG", mode="before")
+    @classmethod
+    def parse_debug(cls, v: Any) -> bool:
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, str):
+            return v.lower() in ("true", "1", "yes", "on", "t", "dev", "debug")
+        return bool(v)
 
     # Supabase
     SUPABASE_URL: str = ""

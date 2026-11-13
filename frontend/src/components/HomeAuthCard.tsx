@@ -78,8 +78,11 @@ export default function HomeAuthCard() {
     const modeParam = searchParams.get('mode');
     if (roleParam === 'company' || roleParam === 'trucker' || roleParam === 'admin') {
       setActiveRole(roleParam);
+      if (roleParam === 'admin') {
+        setMode('login');
+      }
     }
-    if (modeParam === 'login' || modeParam === 'register') {
+    if (modeParam === 'login' || (modeParam === 'register' && roleParam !== 'admin')) {
       setMode(modeParam);
     }
   }, [searchParams]);
@@ -88,17 +91,24 @@ export default function HomeAuthCard() {
 
   const handleRoleChange = (role: Role) => {
     setActiveRole(role);
+    if (role === 'admin') {
+      setMode('login');
+    }
     setError('');
     setSuccessMsg('');
   };
 
   const handleModeChange = (newMode: Mode) => {
+    if (activeRole === 'admin') {
+      setMode('login');
+      return;
+    }
     setMode(newMode);
     setError('');
     setSuccessMsg('');
   };
 
-  const fillDemoAdmin = () => {
+  const fillDemoAdminDharvesh = () => {
     setActiveRole('admin');
     setMode('login');
     setEmail('dharvesh@gmail.com');
@@ -106,11 +116,29 @@ export default function HomeAuthCard() {
     setError('');
   };
 
+  const fillDemoAdminFarhad = () => {
+    setActiveRole('admin');
+    setMode('login');
+    setEmail('farhad@gmail.com');
+    setPassword('farhad123');
+    setError('');
+  };
+
+  const fillDemoAdmin = fillDemoAdminDharvesh;
+
   const fillDemoCompany = () => {
     setActiveRole('company');
     setMode('login');
     setEmail('abc@gmail.com');
     setPassword('Password123!');
+    setError('');
+  };
+
+  const fillDemoCarrier = () => {
+    setActiveRole('trucker');
+    setMode('login');
+    setEmail('carrier@cargosync.com');
+    setPassword('Carrier123!');
     setError('');
   };
 
@@ -237,30 +265,37 @@ export default function HomeAuthCard() {
         </div>
 
         {/* Mode Switcher (Sign In vs Register) */}
-        <div className="inline-flex p-1 rounded-xl bg-gray-100 text-xs font-semibold">
-          <button
-            type="button"
-            onClick={() => handleModeChange('login')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              mode === 'login'
-                ? 'bg-white shadow-sm font-bold text-gray-900'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModeChange('register')}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              mode === 'register'
-                ? 'bg-white shadow-sm font-bold text-gray-900'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            Register
-          </button>
-        </div>
+        {activeRole !== 'admin' ? (
+          <div className="inline-flex p-1 rounded-xl bg-gray-100 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => handleModeChange('login')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                mode === 'login'
+                  ? 'bg-white shadow-sm font-bold text-gray-900'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => handleModeChange('register')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                mode === 'register'
+                  ? 'bg-white shadow-sm font-bold text-gray-900'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Register
+            </button>
+          </div>
+        ) : (
+          <div className="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold flex items-center gap-1.5">
+            <span>🔒</span>
+            <span>Sign In Only</span>
+          </div>
+        )}
       </div>
 
       {/* Role Tabs */}
@@ -442,15 +477,24 @@ export default function HomeAuthCard() {
 
       {/* Demo shortcuts & Quick Fill */}
       {mode === 'login' && (
-        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-500">
-          <span>Quick demo credentials:</span>
-          <div className="flex gap-1.5">
+        <div className="mt-4 pt-4 border-t border-gray-100 text-[11px] text-gray-500">
+          <div className="flex items-center justify-between mb-1.5">
+            <span>Quick demo logins:</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
-              onClick={fillDemoAdmin}
+              onClick={fillDemoAdminDharvesh}
               className="px-2 py-1 rounded-md bg-stone-100 text-stone-700 hover:bg-stone-200 font-medium transition-colors"
             >
-              Admin
+              Admin (Dharvesh)
+            </button>
+            <button
+              type="button"
+              onClick={fillDemoAdminFarhad}
+              className="px-2 py-1 rounded-md bg-stone-100 text-stone-700 hover:bg-stone-200 font-medium transition-colors"
+            >
+              Admin (Farhad)
             </button>
             <button
               type="button"
@@ -459,13 +503,24 @@ export default function HomeAuthCard() {
             >
               Company
             </button>
+            <button
+              type="button"
+              onClick={fillDemoCarrier}
+              className="px-2 py-1 rounded-md bg-stone-100 text-stone-700 hover:bg-stone-200 font-medium transition-colors"
+            >
+              Carrier
+            </button>
           </div>
         </div>
       )}
 
       {/* Toggle between register and login */}
       <div className="mt-4 text-center text-xs text-gray-600">
-        {mode === 'login' ? (
+        {activeRole === 'admin' ? (
+          <p className="text-gray-500 italic">
+            Administrator accounts are restricted to pre-authorized personnel.
+          </p>
+        ) : mode === 'login' ? (
           <span>
             Don't have an account yet?{' '}
             <button

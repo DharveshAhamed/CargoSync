@@ -105,30 +105,12 @@ def login_trucker(data: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/admin/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register_admin(data: AdminRegisterRequest, db: Session = Depends(get_db)):
-    """Register a platform administrator."""
-    clean_email = data.email.strip().lower()
-    existing = db.query(Admin).filter(func.lower(func.trim(Admin.email)) == clean_email).first()
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="An administrator with this email is already registered. Please sign in or use another email.",
-        )
-    admin = Admin(
-        name=data.name.strip(),
-        email=clean_email,
-        password_hash=hash_password(data.password),
-        role="super_admin",
+    """Administrator registration is restricted/disabled."""
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Administrator registration is disabled. Administrator accounts are pre-provisioned.",
     )
-    db.add(admin)
-    db.commit()
-    db.refresh(admin)
-    token_data = {"sub": admin.id, "role": admin.role, "user_type": "admin"}
-    return TokenResponse(
-        access_token=create_access_token(token_data),
-        refresh_token=create_refresh_token(token_data),
-        user={"id": admin.id, "name": admin.name, "email": admin.email,
-              "role": admin.role, "user_type": "admin"},
-    )
+
 
 
 @router.post("/admin/login", response_model=TokenResponse)
